@@ -46,6 +46,9 @@
 // Headers locais, definidos na pasta "include/"
 #include "utils.h"
 #include "matrices.h"
+#include "DEFINITIONS.h"
+
+
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
 // arquivo ".obj". Veja https://en.wikipedia.org/wiki/Wavefront_.obj_file .
@@ -71,6 +74,16 @@ struct ObjModel
             throw std::runtime_error("Erro ao carregar modelo.");
 
         printf("OK.\n");
+    }
+};
+
+struct Monster{
+    glm::mat4 model;
+    std::string name;
+    int typeIlumination;
+
+    Monster(){
+        model = Matrix_Identity();
     }
 };
 
@@ -171,7 +184,7 @@ float g_TorsoPositionX = 0.0f;
 float g_TorsoPositionY = 0.0f;
 
 // Variável que controla o tipo de projeção utilizada: perspectiva ou ortográfica.
-//bool g_UsePerspectiveProjection = true;
+bool g_UsePerspectiveProjection = true;
 
 // Variável que controla se o texto informativo será mostrado na tela.
 bool g_ShowInfoText = true;
@@ -259,6 +272,15 @@ int main(int argc, char* argv[])
     ObjModel cubeObj("../../data/cube.obj");
     ComputeNormals(&cubeObj);
     BuildTrianglesAndAddToVirtualScene(&cubeObj);
+
+    ObjModel coneObj("../../data/cone.obj");
+    ComputeNormals(&coneObj);
+    BuildTrianglesAndAddToVirtualScene(&coneObj);
+
+    ObjModel planemodel("../../data/plane.obj");
+    ComputeNormals(&planemodel);
+    BuildTrianglesAndAddToVirtualScene(&planemodel);
+
 /*
     ObjModel bunnymodel("../../data/bunny.obj");
     ComputeNormals(&bunnymodel);
@@ -377,16 +399,38 @@ int main(int argc, char* argv[])
         // efetivamente aplicadas em todos os pontos.
         glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
-		
-		model = Matrix_Translate(-2.0f,0.0f,0.0f);
+
+		model = Matrix_Translate(-2.0f,0.0f,0.0f) *
+                Matrix_Scale(0.2f, 0.2f, 0.2f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, SPHERE);
-        DrawVirtualObject("sphere");
-		
-		
-		
-		
-		
+        DrawVirtualObject("cube");
+
+
+
+		model = Matrix_Translate(0.0f,0.0f,0.0f) *
+                Matrix_Scale(0.7f, 0.7f, 0.7f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, SPHERE);
+        DrawVirtualObject("cube");
+
+
+
+		model = Matrix_Translate(2.0f,0.0f,0.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, SPHERE);
+        DrawVirtualObject("cone");
+
+        // Desenhamos o modelo do plano
+        model = Matrix_Translate(0.0f, -1.0f,0.0f)
+                    * Matrix_Scale(2.0f, 0.0f, 2.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, PLANE);
+        DrawVirtualObject("plane");
+
+
+
+
 /*
         #define SPHERE 0
         #define BUNNY  1
@@ -1093,6 +1137,8 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         g_TorsoPositionX = 0.0f;
         g_TorsoPositionY = 0.0f;
     }
+
+    g_UsePerspectiveProjection = true;
 /*
     // Se o usuário apertar a tecla P, utilizamos projeção perspectiva.
     if (key == GLFW_KEY_P && action == GLFW_PRESS)
