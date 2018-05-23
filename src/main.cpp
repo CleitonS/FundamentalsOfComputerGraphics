@@ -256,10 +256,10 @@ int main(int argc, char* argv[])
     LoadShadersFromFiles();
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
-    ObjModel spheremodel("../../data/sphere.obj");
-    ComputeNormals(&spheremodel);
-    BuildTrianglesAndAddToVirtualScene(&spheremodel);
-
+    ObjModel cubeObj("../../data/cube.obj");
+    ComputeNormals(&cubeObj);
+    BuildTrianglesAndAddToVirtualScene(&cubeObj);
+/*
     ObjModel bunnymodel("../../data/bunny.obj");
     ComputeNormals(&bunnymodel);
     BuildTrianglesAndAddToVirtualScene(&bunnymodel);
@@ -267,7 +267,7 @@ int main(int argc, char* argv[])
     ObjModel planemodel("../../data/plane.obj");
     ComputeNormals(&planemodel);
     BuildTrianglesAndAddToVirtualScene(&planemodel);
-
+*/
     if ( argc > 1 )
     {
         ObjModel model(argv[1]);
@@ -377,6 +377,16 @@ int main(int argc, char* argv[])
         // efetivamente aplicadas em todos os pontos.
         glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
+		
+		model = Matrix_Translate(-2.0f,0.0f,0.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, SPHERE);
+        DrawVirtualObject("sphere");
+		
+		
+		
+		
+		
 /*
         #define SPHERE 0
         #define BUNNY  1
