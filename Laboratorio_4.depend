@@ -1364,7 +1364,7 @@
 	<fstream>
 	<sstream>
 
-1527043077 source:c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\src\main.cpp
+1527046145 source:c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\src\main.cpp
 	<cmath>
 	<cstdio>
 	<cstdlib>
@@ -1385,6 +1385,7 @@
 	<tiny_obj_loader.h>
 	"utils.h"
 	"matrices.h"
+	"DEFINITIONS.h"
 
 1527041573 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\glm\gtc\type_ptr.hpp
 	"../gtc/quaternion.hpp"
@@ -1471,4 +1472,6 @@
 
 1527041574 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\glm\matrix.hpp
 	"detail/func_matrix.hpp"
+
+1527046003 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\definitions.h
 

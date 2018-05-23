@@ -76,16 +76,18 @@ struct ObjModel
         printf("OK.\n");
     }
 };
-
 struct Monster{
     glm::mat4 model;
-    std::string name;
+    char * name;
     int typeIlumination;
+	ObjModel *Obj;
+	bool enable = false;
 
     Monster(){
         model = Matrix_Identity();
     }
 };
+
 
 
 // Declaração de funções utilizadas para pilha de matrizes de modelagem.
@@ -97,7 +99,7 @@ void PopMatrix(glm::mat4& M);
 void BuildTrianglesAndAddToVirtualScene(ObjModel*); // Constrói representação de um ObjModel como malha de triângulos para renderização
 void ComputeNormals(ObjModel* model); // Computa normais de um ObjModel, caso não existam.
 void LoadShadersFromFiles(); // Carrega os shaders de vértice e fragmento, criando um programa de GPU
-void DrawVirtualObject(const char* object_name); // Desenha um objeto armazenado em g_VirtualScene
+void DrawVirtualObject(char* object_name); // Desenha um objeto armazenado em g_VirtualScene
 GLuint LoadShader_Vertex(const char* filename);   // Carrega um vertex shader
 GLuint LoadShader_Fragment(const char* filename); // Carrega um fragment shader
 void LoadShader(const char* filename, GLuint shader_id); // Função utilizada pelas duas acima
@@ -198,6 +200,11 @@ GLint view_uniform;
 GLint projection_uniform;
 GLint object_id_uniform;
 
+
+struct Monster listMonster[MAX_MONSTER];
+void createMonster(char *name, int typeIlumination, ObjModel *Obj);
+
+
 int main(int argc, char* argv[])
 {
     // Inicializamos a biblioteca GLFW, utilizada para criar uma janela do
@@ -267,17 +274,16 @@ int main(int argc, char* argv[])
     // "Aula_03_Rendering_Pipeline_Grafico.pdf".
     //
     LoadShadersFromFiles();
-	struct Monster listMonster[10];
-	
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel cubeObj("../../data/cube.obj");
     ComputeNormals(&cubeObj);
     BuildTrianglesAndAddToVirtualScene(&cubeObj);
-	listMonster[0].name = "cube";
-	listMonster[0].typeIlumination = BASIC; 
-	listMonster[0].Obj = &cubeObj;
-	
+    createMonster("cube", BASIC,&cubeObj );
+	/*listMonster[0].name = "cube";
+	listMonster[0].typeIlumination = BASIC;
+	listMonster[0].Obj = &cubeObj;*/
+
 
     ObjModel coneObj("../../data/cone.obj");
     ComputeNormals(&coneObj);
@@ -478,7 +484,7 @@ int main(int argc, char* argv[])
 
 // Função que desenha um objeto armazenado em g_VirtualScene. Veja definição
 // dos objetos na função BuildTrianglesAndAddToVirtualScene().
-void DrawVirtualObject(const char* object_name)
+void DrawVirtualObject(char* object_name)
 {
     // "Ligamos" o VAO. Informamos que queremos utilizar os atributos de
     // vértices apontados pelo VAO criado pela função BuildTrianglesAndAddToVirtualScene(). Veja
@@ -1412,6 +1418,23 @@ void PrintObjModelInfo(ObjModel* model)
     printf("\n");
   }
 }
+
+void createMonster(char *name, int typeIlumination, ObjModel *Obj){
+    for(int i = 0; i< MAX_MONSTER; i++){
+        if (listMonster[i].enable == false){
+            listMonster[i].name = name;
+            listMonster[i].typeIlumination = typeIlumination;
+            listMonster[i].Obj = Obj;
+            listMonster[i].enable = true;
+            return;
+        }
+    }
+    printf("ERRO na criação de objeto tipo 'Monster'\n");
+}
+
+
+
+
 
 // set makeprg=cd\ ..\ &&\ make\ run\ >/dev/null
 // vim: set spell spelllang=pt_br :
