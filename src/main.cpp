@@ -267,11 +267,17 @@ int main(int argc, char* argv[])
     // "Aula_03_Rendering_Pipeline_Grafico.pdf".
     //
     LoadShadersFromFiles();
+	struct Monster listMonster[10];
+	
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel cubeObj("../../data/cube.obj");
     ComputeNormals(&cubeObj);
     BuildTrianglesAndAddToVirtualScene(&cubeObj);
+	listMonster[0].name = "cube";
+	listMonster[0].typeIlumination = BASIC; 
+	listMonster[0].Obj = &cubeObj;
+	
 
     ObjModel coneObj("../../data/cone.obj");
     ComputeNormals(&coneObj);
@@ -281,15 +287,6 @@ int main(int argc, char* argv[])
     ComputeNormals(&planemodel);
     BuildTrianglesAndAddToVirtualScene(&planemodel);
 
-/*
-    ObjModel bunnymodel("../../data/bunny.obj");
-    ComputeNormals(&bunnymodel);
-    BuildTrianglesAndAddToVirtualScene(&bunnymodel);
-
-    ObjModel planemodel("../../data/plane.obj");
-    ComputeNormals(&planemodel);
-    BuildTrianglesAndAddToVirtualScene(&planemodel);
-*/
     if ( argc > 1 )
     {
         ObjModel model(argv[1]);
@@ -363,29 +360,7 @@ int main(int argc, char* argv[])
         // "Aula_09_Projecoes.pdf".
         float nearplane = -0.1f;  // Posição do "near plane"
         float farplane  = -10.0f; // Posição do "far plane"
-/*
-        if (g_UsePerspectiveProjection)
-        {
-            // Projeção Perspectiva.
-            // Para definição do field of view (FOV), veja slide 228 do
-            // documento "Aula_09_Projecoes.pdf".
-            float field_of_view = 3.141592 / 3.0f;
-            projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
-        }
-        else
-        {
-            // Projeção Ortográfica.
-            // Para definição dos valores l, r, b, t ("left", "right", "bottom", "top"),
-            // veja slide 243 do documento "Aula_09_Projecoes.pdf".
-            // Para simular um "zoom" ortográfico, computamos o valor de "t"
-            // utilizando a variável g_CameraDistance.
-            float t = 1.5f*g_CameraDistance/2.5f;
-            float b = -t;
-            float r = t*g_ScreenRatio;
-            float l = -r;
-            projection = Matrix_Orthographic(l, r, b, t, nearplane, farplane);
-        }
-*/
+
 		// Projeção Perspectiva.
 		// Para definição do field of view (FOV), veja slide 228 do
 		// documento "Aula_09_Projecoes.pdf".
@@ -400,11 +375,11 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
-		model = Matrix_Translate(-2.0f,0.0f,0.0f) *
-                Matrix_Scale(0.2f, 0.2f, 0.2f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, SPHERE);
-        DrawVirtualObject("cube");
+		listMonster[0].model = Matrix_Translate(-2.0f,0.0f,0.0f) *
+							   Matrix_Scale(0.2f, 0.2f, 0.2f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(listMonster[0].model));
+        glUniform1i(object_id_uniform, listMonster[0].typeIlumination);
+        DrawVirtualObject(listMonster[0].name);
 
 
 
