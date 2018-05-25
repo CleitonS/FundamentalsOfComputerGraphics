@@ -76,15 +76,25 @@ struct ObjModel
         printf("OK.\n");
     }
 };
+
 struct Monster{
     glm::mat4 model;
     char * name;
     int typeIlumination;
+	char *nameObj
 	ObjModel *Obj;
 	bool enable = false;
 
-    Monster(){
+    Monster(char *name, int typeIlumination, char* nameObj){
         model = Matrix_Identity();
+		ObjModel cubeObj(nameObj);
+		ComputeNormals(&cubeObj);
+		BuildTrianglesAndAddToVirtualScene(&cubeObj);	
+		this.Obj = cubeObj;
+		this.name = name;
+		this.typeIlumination = typeIlumination;
+		this.listMonster[i].enable = true;
+		
     }
 };
 
@@ -276,10 +286,7 @@ int main(int argc, char* argv[])
     LoadShadersFromFiles();
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
-    ObjModel cubeObj("../../data/cube.obj");
-    ComputeNormals(&cubeObj);
-    BuildTrianglesAndAddToVirtualScene(&cubeObj);
-    createMonster("cube", BASIC,&cubeObj );
+    createMonster("cube", BASIC, "../../data/cube.obj" );
 	/*listMonster[0].name = "cube";
 	listMonster[0].typeIlumination = BASIC;
 	listMonster[0].Obj = &cubeObj;*/
@@ -1419,13 +1426,11 @@ void PrintObjModelInfo(ObjModel* model)
   }
 }
 
-void createMonster(char *name, int typeIlumination, ObjModel *Obj){
+void createMonster(char *name, int typeIlumination, char* nameObj){
     for(int i = 0; i< MAX_MONSTER; i++){
-        if (listMonster[i].enable == false){
-            listMonster[i].name = name;
-            listMonster[i].typeIlumination = typeIlumination;
-            listMonster[i].Obj = Obj;
-            listMonster[i].enable = true;
+        if (listMonster[i].enable == false || listMonster[i] == 0){
+			struct Monster newMonster(name, typeIlumination, nameObj );
+            listMonster[i] = newMonster;
             return;
         }
     }
