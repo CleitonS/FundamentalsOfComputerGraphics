@@ -329,6 +329,7 @@
 		<Unit filename="include/glm/vec4.hpp" />
 		<Unit filename="include/glm/vector_relational.hpp" />
 		<Unit filename="include/matrices.h" />
+		<Unit filename="include/monster.h" />
 		<Unit filename="include/tiny_obj_loader.h" />
 		<Unit filename="include/utils.h" />
 		<Unit filename="src/glad.c">

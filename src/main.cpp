@@ -47,6 +47,7 @@
 #include "utils.h"
 #include "matrices.h"
 #include "DEFINITIONS.h"
+#include "monster.h"
 
 
 
@@ -132,29 +133,6 @@ struct SceneObject
     GLuint       vertex_array_object_id; // ID do VAO onde estão armazenados os atributos do modelo
 };
 
-struct Monster{
-    glm::mat4 model;
-    char * name;
-    int typeIlumination;
-	struct ObjModel *Obj;
-	bool enable = false;
-	float velocidade;
-    public:
-        create(char *nameDesc, int typeIluminationIn, struct ObjModel* Object){
-            model = Matrix_Identity();
-			velocidade = Matrix_Identity();
-            Obj = Object;
-            name = nameDesc;
-            typeIlumination = typeIluminationIn;
-            enable = true;
-        }	
-		UpdatePosition(float interval){
-			model = model * Matrix_Translate(-1.0f,interval * velocidade,0.0f)
-			
-		}
-};
-
-
 
 // Abaixo definimos variáveis globais utilizadas em várias funções do código.
 
@@ -215,6 +193,9 @@ GLint object_id_uniform;
 
 struct Monster listMonster[MAX_MONSTER];
 void createMonster(char *name, int typeIlumination, ObjModel *Obj);
+void UpdateAllMonsters(float interval);
+
+
 
 
 int main(int argc, char* argv[])
@@ -281,6 +262,10 @@ int main(int argc, char* argv[])
 
     printf("GPU: %s, %s, OpenGL %s, GLSL %s\n", vendor, renderer, glversion, glslversion);
 
+    /*Inicializa Seed para a utilização de funções randomicas*/
+    srand(time(0));
+
+
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
     // para renderização. Veja slide 217 e 219 do documento no Moodle
     // "Aula_03_Rendering_Pipeline_Grafico.pdf".
@@ -292,6 +277,27 @@ int main(int argc, char* argv[])
     ComputeNormals(&cubeObj);
     BuildTrianglesAndAddToVirtualScene(&cubeObj);
     createMonster("cube", BASIC, &cubeObj );
+
+    if (glfwGetTime() > 2){
+        ObjModel cubeObj2("../../data/cube.obj");
+        ComputeNormals(&cubeObj2);
+        BuildTrianglesAndAddToVirtualScene(&cubeObj2);
+        createMonster("cube", PLANE, &cubeObj2 );
+    }
+
+    if (glfwGetTime() > 4){
+        ObjModel cubeObj3("../../data/cube.obj");
+        ComputeNormals(&cubeObj3);
+        BuildTrianglesAndAddToVirtualScene(&cubeObj3);
+        createMonster("cube", 0, &cubeObj3 );
+    }
+    if (glfwGetTime() > 6){
+        ObjModel cubeObj4("../../data/cube.obj");
+        ComputeNormals(&cubeObj4);
+        BuildTrianglesAndAddToVirtualScene(&cubeObj4);
+        createMonster("cube", 1, &cubeObj4 );
+    }
+
 
     if ( argc > 1 )
     {
@@ -315,7 +321,7 @@ int main(int argc, char* argv[])
     glm::mat4 the_projection;
     glm::mat4 the_model;
     glm::mat4 the_view;
-	float tempPrev = glfwGetTime()
+	float tempPrev = glfwGetTime();
 
     // Ficamos em loop, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
@@ -381,12 +387,16 @@ int main(int argc, char* argv[])
         // efetivamente aplicadas em todos os pontos.
         glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
-
-		listMonster[0].model = Matrix_Translate(-2.0f,0.0f,0.0f) *
-							   Matrix_Scale(0.2f, 0.2f, 0.2f);
+/*
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(listMonster[0].model));
         glUniform1i(object_id_uniform, listMonster[0].typeIlumination);
         DrawVirtualObject(listMonster[0].name);
+        listMonster[0].UpdatePosition();
+        tempPrev = glfwGetTime();
+        */
+
+        UpdateAllMonsters(glfwGetTime() - tempPrev);
+        tempPrev = glfwGetTime();
 
 /*
 
@@ -1420,17 +1430,6 @@ void PrintObjModelInfo(ObjModel* model)
   }
 }
 
-void createMonster(char *name, int typeIlumination, ObjModel *Obj){
-    for(int i = 0; i< MAX_MONSTER; i++){
-        if (listMonster[i].enable == false ){
-			struct Monster newMonster;
-			newMonster.create(name, typeIlumination,Obj );
-            listMonster[i] = newMonster;
-            return;
-        }
-    }
-    printf("ERRO na criação de objeto tipo 'Monster'\n");
-}
 
 
 
