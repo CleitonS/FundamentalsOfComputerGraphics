@@ -282,23 +282,9 @@ int main(int argc, char* argv[])
     ComputeNormals(&cubeObj);
     BuildTrianglesAndAddToVirtualScene(&cubeObj);
     createMonster("cube", BASIC, &cubeObj );
-
-    ObjModel cubeObj2("../../data/cube.obj");
-    ComputeNormals(&cubeObj2);
-    BuildTrianglesAndAddToVirtualScene(&cubeObj2);
-    createMonster("cube", PLANE, &cubeObj2 );
-
-
-    ObjModel cubeObj3("../../data/cube.obj");
-    ComputeNormals(&cubeObj3);
-    BuildTrianglesAndAddToVirtualScene(&cubeObj3);
-    createMonster("cube", 0, &cubeObj3 );
-
-
-    ObjModel cubeObj4("../../data/cube.obj");
-    ComputeNormals(&cubeObj4);
-    BuildTrianglesAndAddToVirtualScene(&cubeObj4);
-    createMonster("cube", 1, &cubeObj4 );
+    createMonster("cube", PLANE, &cubeObj );
+    createMonster("cube", 0, &cubeObj );
+    createMonster("cube", 1, &cubeObj );
 
 
 
@@ -416,13 +402,22 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, SPHERE);
         DrawVirtualObject("cone");
 */
-        // Desenhamos o modelo do plano
+
+        // Desenhamos o modelo do chão
         model = Matrix_Translate(0.0f, -1.0f,0.0f)
                     * Matrix_Scale(6.0f, 0.0f, 6.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
 
+/*
+        model = Matrix_Translate(-2.0f, 0.0f,0.0f)
+                    * Matrix_Scale(0.0f, 2.0f, 6.0f);
+
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, BACK);
+        DrawVirtualObject("plane");
+*/
 
 
 
