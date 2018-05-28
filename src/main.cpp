@@ -271,6 +271,11 @@ int main(int argc, char* argv[])
     // "Aula_03_Rendering_Pipeline_Grafico.pdf".
     //
     LoadShadersFromFiles();
+    ObjModel planeObj("../../data/plane.obj");
+    ComputeNormals(&planeObj);
+    BuildTrianglesAndAddToVirtualScene(&planeObj);
+
+
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel cubeObj("../../data/cube.obj");
@@ -278,25 +283,23 @@ int main(int argc, char* argv[])
     BuildTrianglesAndAddToVirtualScene(&cubeObj);
     createMonster("cube", BASIC, &cubeObj );
 
-    if (glfwGetTime() > 2){
-        ObjModel cubeObj2("../../data/cube.obj");
-        ComputeNormals(&cubeObj2);
-        BuildTrianglesAndAddToVirtualScene(&cubeObj2);
-        createMonster("cube", PLANE, &cubeObj2 );
-    }
+    ObjModel cubeObj2("../../data/cube.obj");
+    ComputeNormals(&cubeObj2);
+    BuildTrianglesAndAddToVirtualScene(&cubeObj2);
+    createMonster("cube", PLANE, &cubeObj2 );
 
-    if (glfwGetTime() > 4){
-        ObjModel cubeObj3("../../data/cube.obj");
-        ComputeNormals(&cubeObj3);
-        BuildTrianglesAndAddToVirtualScene(&cubeObj3);
-        createMonster("cube", 0, &cubeObj3 );
-    }
-    if (glfwGetTime() > 6){
-        ObjModel cubeObj4("../../data/cube.obj");
-        ComputeNormals(&cubeObj4);
-        BuildTrianglesAndAddToVirtualScene(&cubeObj4);
-        createMonster("cube", 1, &cubeObj4 );
-    }
+
+    ObjModel cubeObj3("../../data/cube.obj");
+    ComputeNormals(&cubeObj3);
+    BuildTrianglesAndAddToVirtualScene(&cubeObj3);
+    createMonster("cube", 0, &cubeObj3 );
+
+
+    ObjModel cubeObj4("../../data/cube.obj");
+    ComputeNormals(&cubeObj4);
+    BuildTrianglesAndAddToVirtualScene(&cubeObj4);
+    createMonster("cube", 1, &cubeObj4 );
+
 
 
     if ( argc > 1 )
@@ -412,15 +415,15 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, SPHERE);
         DrawVirtualObject("cone");
-
+*/
         // Desenhamos o modelo do plano
         model = Matrix_Translate(0.0f, -1.0f,0.0f)
-                    * Matrix_Scale(2.0f, 0.0f, 2.0f);
+                    * Matrix_Scale(6.0f, 0.0f, 6.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
 
-*/
+
 
 
 /*
