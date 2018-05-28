@@ -81,19 +81,17 @@ struct Monster{
     glm::mat4 model;
     char * name;
     int typeIlumination;
-	char *nameObj
-	ObjModel *Obj;
+	struct ObjModel *Obj;
 	bool enable = false;
+    public:
+        create(char *nameDesc, int typeIluminationIn, struct ObjModel* Object){
+            model = Matrix_Identity();
 
-    Monster(char *name, int typeIlumination, ObjModel* Obj){
-        model = Matrix_Identity();
-
-		this.Obj = Obj;
-		this.name = name;
-		this.typeIlumination = typeIlumination;
-		this.listMonster[i].enable = true;
-		
-    }
+            Obj = Object;
+            name = nameDesc;
+            typeIlumination = typeIluminationIn;
+            enable = true;
+        }
 };
 
 
@@ -286,13 +284,14 @@ int main(int argc, char* argv[])
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel cubeObj("../../data/cube.obj");
     ComputeNormals(&cubeObj);
-    BuildTrianglesAndAddToVirtualScene(&cubeObj);	
+    BuildTrianglesAndAddToVirtualScene(&cubeObj);
     createMonster("cube", BASIC, &cubeObj );
+
 	/*listMonster[0].name = "cube";
 	listMonster[0].typeIlumination = BASIC;
 	listMonster[0].Obj = &cubeObj;*/
 
-
+/*
     ObjModel coneObj("../../data/cone.obj");
     ComputeNormals(&coneObj);
     BuildTrianglesAndAddToVirtualScene(&coneObj);
@@ -300,7 +299,7 @@ int main(int argc, char* argv[])
     ObjModel planemodel("../../data/plane.obj");
     ComputeNormals(&planemodel);
     BuildTrianglesAndAddToVirtualScene(&planemodel);
-
+*/
     if ( argc > 1 )
     {
         ObjModel model(argv[1]);
@@ -395,7 +394,7 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, listMonster[0].typeIlumination);
         DrawVirtualObject(listMonster[0].name);
 
-
+/*
 
 		model = Matrix_Translate(0.0f,0.0f,0.0f) *
                 Matrix_Scale(0.7f, 0.7f, 0.7f);
@@ -417,7 +416,7 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
 
-
+*/
 
 
 /*
@@ -1429,8 +1428,9 @@ void PrintObjModelInfo(ObjModel* model)
 
 void createMonster(char *name, int typeIlumination, ObjModel *Obj){
     for(int i = 0; i< MAX_MONSTER; i++){
-        if (listMonster[i].enable == false || listMonster[i] == 0){
-			struct Monster newMonster(name, typeIlumination,Obj );
+        if (listMonster[i].enable == false ){
+			struct Monster newMonster;
+			newMonster.create(name, typeIlumination,Obj );
             listMonster[i] = newMonster;
             return;
         }
