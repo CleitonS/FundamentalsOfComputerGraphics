@@ -77,24 +77,6 @@ struct ObjModel
     }
 };
 
-struct Monster{
-    glm::mat4 model;
-    char * name;
-    int typeIlumination;
-	struct ObjModel *Obj;
-	bool enable = false;
-    public:
-        create(char *nameDesc, int typeIluminationIn, struct ObjModel* Object){
-            model = Matrix_Identity();
-
-            Obj = Object;
-            name = nameDesc;
-            typeIlumination = typeIluminationIn;
-            enable = true;
-        }
-};
-
-
 
 // Declaração de funções utilizadas para pilha de matrizes de modelagem.
 void PushMatrix(glm::mat4 M);
@@ -149,6 +131,30 @@ struct SceneObject
     GLenum       rendering_mode; // Modo de rasterização (GL_TRIANGLES, GL_TRIANGLE_STRIP, etc.)
     GLuint       vertex_array_object_id; // ID do VAO onde estão armazenados os atributos do modelo
 };
+
+struct Monster{
+    glm::mat4 model;
+    char * name;
+    int typeIlumination;
+	struct ObjModel *Obj;
+	bool enable = false;
+	float velocidade;
+    public:
+        create(char *nameDesc, int typeIluminationIn, struct ObjModel* Object){
+            model = Matrix_Identity();
+			velocidade = Matrix_Identity();
+            Obj = Object;
+            name = nameDesc;
+            typeIlumination = typeIluminationIn;
+            enable = true;
+        }	
+		UpdatePosition(float interval){
+			model = model * Matrix_Translate(-1.0f,interval * velocidade,0.0f)
+			
+		}
+};
+
+
 
 // Abaixo definimos variáveis globais utilizadas em várias funções do código.
 
@@ -287,19 +293,6 @@ int main(int argc, char* argv[])
     BuildTrianglesAndAddToVirtualScene(&cubeObj);
     createMonster("cube", BASIC, &cubeObj );
 
-	/*listMonster[0].name = "cube";
-	listMonster[0].typeIlumination = BASIC;
-	listMonster[0].Obj = &cubeObj;*/
-
-/*
-    ObjModel coneObj("../../data/cone.obj");
-    ComputeNormals(&coneObj);
-    BuildTrianglesAndAddToVirtualScene(&coneObj);
-
-    ObjModel planemodel("../../data/plane.obj");
-    ComputeNormals(&planemodel);
-    BuildTrianglesAndAddToVirtualScene(&planemodel);
-*/
     if ( argc > 1 )
     {
         ObjModel model(argv[1]);
@@ -322,6 +315,7 @@ int main(int argc, char* argv[])
     glm::mat4 the_projection;
     glm::mat4 the_model;
     glm::mat4 the_view;
+	float tempPrev = glfwGetTime()
 
     // Ficamos em loop, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
