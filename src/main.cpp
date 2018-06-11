@@ -342,10 +342,10 @@ int main(int argc, char* argv[])
         float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
         float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
-        // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
+        // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.glm::vec4(x,y,z,1.0f);
         // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
-        glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
-        glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+        glm::vec4 camera_position_c  =  glm::vec4(2.0f,0.0f,0.0f,1.0f);// Ponto "c", centro da câmera
+        glm::vec4 camera_lookat_l    = glm::vec4(x,-y,z,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
         glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
         glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
 
@@ -387,21 +387,17 @@ int main(int argc, char* argv[])
         UpdateAllMonsters(glfwGetTime() - tempPrev);
         tempPrev = glfwGetTime();
 
-/*
+    // Objeto para ter noção do centro
 
 		model = Matrix_Translate(0.0f,0.0f,0.0f) *
-                Matrix_Scale(0.7f, 0.7f, 0.7f);
+                Matrix_Scale(0.2f, 0.2f, 0.2f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, SPHERE);
         DrawVirtualObject("cube");
 
 
 
-		model = Matrix_Translate(2.0f,0.0f,0.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, SPHERE);
-        DrawVirtualObject("cone");
-*/
+
 
         // Desenhamos o modelo do chão
         model = Matrix_Translate(0.0f, -1.0f,0.0f)
@@ -410,14 +406,8 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
 
-/*
-        model = Matrix_Translate(-2.0f, 0.0f,0.0f)
-                    * Matrix_Scale(0.0f, 2.0f, 6.0f);
 
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, BACK);
-        DrawVirtualObject("plane");
-*/
+
 
 
 
