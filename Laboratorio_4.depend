@@ -1899,7 +1899,7 @@
 	<fstream>
 	<sstream>
 
-1528763935 source:c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\src\main.cpp
+1528836209 source:c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\src\main.cpp
 	<cmath>
 	<cstdio>
 	<cstdlib>
@@ -1922,6 +1922,7 @@
 	"matrices.h"
 	"DEFINITIONS.h"
 	"monster.h"
+	"Bullets.h"
 
 1528746649 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\glm\gtc\type_ptr.hpp
 	"../gtc/quaternion.hpp"
@@ -2009,9 +2010,17 @@
 1528746649 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\glm\matrix.hpp
 	"detail/func_matrix.hpp"
 
-1528746649 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\definitions.h
+1528836549 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\definitions.h
 
 1528746649 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\monster.h
+	<ctime>
+	<cstdlib>
+
+1528825588 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\bulllets.h
+	<ctime>
+	<cstdlib>
+
+1528836549 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\bullets.h
 	<ctime>
 	<cstdlib>
 

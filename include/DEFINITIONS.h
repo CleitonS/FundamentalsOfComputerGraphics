@@ -9,5 +9,7 @@
 #define PHI    3.1415926535
 /**/
 
-
+#define VELOCIDADE_PLAYER 1.0f;
 #define MAX_MONSTER 10
+#define MAX_BULLETS 50
+
