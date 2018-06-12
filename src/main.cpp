@@ -250,6 +250,9 @@ int main(int argc, char* argv[])
     // ... ou rolar a "rodinha" do mouse.
     glfwSetScrollCallback(window, ScrollCallback);
 
+    //esconde o cursor e movimento ilimitado
+    glfwSetInputMode(window,GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     // Indicamos que as chamadas OpenGL deverão renderizar nesta janela
     glfwMakeContextCurrent(window);
 
@@ -362,7 +365,7 @@ int main(int argc, char* argv[])
         //variaveis para o movimento de objetos
         float tempNow = glfwGetTime();
         float deltaTempo = tempNow - tempPrev;
-        printf("%f\n", deltaTempo);
+
 
         // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
@@ -973,16 +976,7 @@ double g_LastCursorPosX, g_LastCursorPosY;
 // Função callback chamada sempre que o usuário aperta algum dos botões do mouse
 void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    {
-        // Se o usuário pressionou o botão esquerdo do mouse, guardamos a
-        // posição atual do cursor nas variáveis g_LastCursorPosX e
-        // g_LastCursorPosY.  Também, setamos a variável
-        // g_LeftMouseButtonPressed como true, para saber que o usuário está
-        // com o botão esquerdo pressionado.
-        glfwGetCursorPos(window, &g_LastCursorPosX, &g_LastCursorPosY);
-        g_LeftMouseButtonPressed = true;
-    }
+
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
     {
         // Quando o usuário soltar o botão esquerdo do mouse, atualizamos a
@@ -1033,11 +1027,10 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
     // parâmetros que definem a posição da câmera dentro da cena virtual.
     // Assim, temos que o usuário consegue controlar a câmera.
 
-    if (g_LeftMouseButtonPressed)
-    {
         // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
         float dx = xpos - g_LastCursorPosX;
         float dy = ypos - g_LastCursorPosY;
+
 
         // Atualizamos parâmetros da câmera com os deslocamentos
         g_CameraTheta -= 0.01f*dx;
@@ -1057,7 +1050,7 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
         // cursor como sendo a última posição conhecida do cursor.
         g_LastCursorPosX = xpos;
         g_LastCursorPosY = ypos;
-    }
+
 
     if (g_RightMouseButtonPressed)
     {

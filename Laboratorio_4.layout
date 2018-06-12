@@ -2,29 +2,9 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="include\monster.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1909" topLine="41" />
-		</Cursor>
-	</File>
-	<File name="src\shader_fragment.glsl" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2888" topLine="69" />
-		</Cursor>
-	</File>
-	<File name="include\matrices.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7758" topLine="229" />
-		</Cursor>
-	</File>
 	<File name="include\DEFINITIONS.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="148" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\utils.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="55" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="src\shader_vertex.glsl" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
@@ -37,11 +17,6 @@
 			<Cursor1 position="2352" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="include\data.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="29" topLine="0" />
-		</Cursor>
-	</File>
 	<File name="src\glad.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="4158" topLine="173" />
@@ -49,7 +24,45 @@
 	</File>
 	<File name="src\main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="15053" topLine="342" />
+			<Cursor1 position="10545" topLine="354" />
+		</Cursor>
+		<Folding>
+			<Collapse line="829" />
+			<Collapse line="899" />
+			<Collapse line="951" />
+			<Collapse line="1089" />
+			<Collapse line="1107" />
+			<Collapse line="1201" />
+			<Collapse line="1216" />
+			<Collapse line="1238" />
+			<Collapse line="1252" />
+			<Collapse line="1268" />
+			<Collapse line="1305" />
+		</Folding>
+	</File>
+	<File name="src\shader_fragment.glsl" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2888" topLine="69" />
+		</Cursor>
+	</File>
+	<File name="include\monster.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1909" topLine="41" />
+		</Cursor>
+	</File>
+	<File name="include\data.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="29" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\matrices.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7758" topLine="229" />
+		</Cursor>
+	</File>
+	<File name="include\utils.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="55" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
