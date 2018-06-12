@@ -50,6 +50,9 @@
 #include "monster.h"
 
 
+#define VELOCIDADE_PLAYER 1.0f;
+
+
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
 // arquivo ".obj". Veja https://en.wikipedia.org/wiki/Wavefront_.obj_file .
@@ -152,6 +155,12 @@ float g_ScreenRatio = 1.0f;
 float g_AngleX = 0.0f;
 float g_AngleY = 0.0f;
 float g_AngleZ = 0.0f;
+
+
+//Movimentação do personagem
+float move_frente = 0.0f;
+float move_lado = 0.0f;
+
 
 // "g_LeftMouseButtonPressed = true" se o usuário está com o botão esquerdo do mouse
 // pressionado no momento atual. Veja função MouseButtonCallback().
@@ -312,6 +321,14 @@ int main(int argc, char* argv[])
     glm::mat4 the_view;
 	float tempPrev = glfwGetTime();
 
+    //inicializando variaveis da camera
+    glm::vec4 camera_position_c  =  glm::vec4(0.0f,0.0f,0.0f,1.0f);// Ponto "c", centro da câmera
+
+    glm::vec4 camera_view_vector =  glm::vec4(0.0f,0.0f,0.0f,0.0f); // Vetor "view", sentido para onde a câmera está virada
+
+
+
+
     // Ficamos em loop, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
     {
@@ -342,12 +359,30 @@ int main(int argc, char* argv[])
         float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
         float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
-        // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.glm::vec4(x,y,z,1.0f);
+        //variaveis para o movimento de objetos
+        float tempNow = glfwGetTime();
+        float deltaTempo = tempNow - tempPrev;
+        printf("%f\n", deltaTempo);
+
+        // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
-        glm::vec4 camera_position_c  =  glm::vec4(2.0f,0.0f,0.0f,1.0f);// Ponto "c", centro da câmera
-        glm::vec4 camera_lookat_l    = glm::vec4(x,-y,z,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
-        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+
+
         glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+        glm::vec4 camera_vec_ortogonal   = crossproduct(camera_view_vector,camera_up_vector); //vetor para o moviemnto para os lados
+
+        camera_position_c  =  glm::vec4(camera_position_c.x + camera_view_vector.x*deltaTempo*move_frente + camera_vec_ortogonal.x*deltaTempo*move_lado ,
+                                        camera_position_c.y,
+                                        camera_position_c.z + camera_view_vector.z*deltaTempo*move_frente + camera_vec_ortogonal.z*deltaTempo*move_lado ,
+                                        1.0f);// Ponto "c", centro da câmera
+
+         camera_view_vector = glm::vec4(x  + camera_view_vector.x*deltaTempo*move_frente + camera_vec_ortogonal.x*deltaTempo*move_lado,
+                                       -y ,
+                                       z  + camera_view_vector.z*deltaTempo*move_frente + camera_vec_ortogonal.z*deltaTempo*move_lado ,
+                                       0.0f); // Vetor "view", sentido para onde a câmera está virada
+
+
+
 
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
         // definir o sistema de coordenadas da câmera.  Veja slide 179 do
@@ -384,8 +419,8 @@ int main(int argc, char* argv[])
         tempPrev = glfwGetTime();
         */
 
-        UpdateAllMonsters(glfwGetTime() - tempPrev);
-        tempPrev = glfwGetTime();
+        UpdateAllMonsters(deltaTempo);
+        tempPrev = tempNow;
 
     // Objeto para ter noção do centro
 
@@ -1105,6 +1140,28 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     {
         g_AngleZ += (mod & GLFW_MOD_SHIFT) ? -delta : delta;
     }
+
+
+
+    if (key == GLFW_KEY_W && action == GLFW_PRESS)
+        move_frente = VELOCIDADE_PLAYER;
+    if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+        move_frente = 0.0f;
+
+    if (key == GLFW_KEY_S && action == GLFW_PRESS)
+        move_frente = -VELOCIDADE_PLAYER;
+    if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+        move_frente = 0.0f;
+
+    if (key == GLFW_KEY_D && action == GLFW_PRESS)
+        move_lado = VELOCIDADE_PLAYER;
+    if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+        move_lado = 0.0f;
+
+    if (key == GLFW_KEY_A && action == GLFW_PRESS)
+        move_lado = -VELOCIDADE_PLAYER;
+    if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+        move_lado = 0.0f;
 
     // Se o usuário apertar a tecla espaço, resetamos os ângulos de Euler para zero.
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
