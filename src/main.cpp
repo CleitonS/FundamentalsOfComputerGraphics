@@ -343,8 +343,8 @@ int main(int argc, char* argv[])
 	float tempPrev = glfwGetTime();
 
     //inicializando variaveis da camera
-    glm::vec4 camera_position_c  =  glm::vec4(0.0f,0.0f,0.0f,1.0f);// Ponto "c", centro da câmera
-    glm::vec4 camera_position_c_copia  =  glm::vec4(0.0f,0.0f,0.0f,1.0f);
+    glm::vec4 camera_position_c  =  glm::vec4(0.0f,5.0f,0.0f,1.0f);// Ponto "c", centro da câmera
+    glm::vec4 camera_position_c_copia  =  glm::vec4(0.0f,0.0f,0.0f,1.0f);//copia para o caso de houver intersecao com um objeto
     glm::vec4 camera_view_vector =  glm::vec4(0.0f,0.0f,0.0f,0.0f); // Vetor "view", sentido para onde a câmera está virada
 
     //inicializamos uma matriz com todos os modelos dos objetos em cena
@@ -355,7 +355,10 @@ int main(int argc, char* argv[])
         modelos_do_universo[i]=mat_vazia;
 
 
-
+   //define a velocidade que o player cai
+   float gravidade = 0.5f;
+   //permite que quando o player está em cima de algo, ele n caia mais
+   int gravidade_aux = 0;
 
 
 
@@ -402,18 +405,32 @@ int main(int argc, char* argv[])
         glm::vec4 camera_vec_ortogonal   = crossproduct(camera_view_vector,camera_up_vector); //vetor para o moviemnto para os lados
         camera_position_c_copia = camera_position_c;//para o caso de houver intersecao ocm um objeto
         camera_position_c  =  glm::vec4(camera_position_c.x + camera_view_vector.x*deltaTempo*move_frente + camera_vec_ortogonal.x*deltaTempo*move_lado ,
-                                        camera_position_c.y,
+                                        camera_position_c.y - gravidade*deltaTempo,
                                         camera_position_c.z + camera_view_vector.z*deltaTempo*move_frente + camera_vec_ortogonal.z*deltaTempo*move_lado ,
                                         1.0f);// Ponto "c", centro da câmera
 
-        //se houver intersecao com um objeto, nao anda
+        //se houver um objeto abaixo, nao cai
+         for(int i = 0;i<MAX_OBJETOS;i++)
+            if(intersecao_AABB_PONTO(modelos_do_universo[i],glm::vec4(camera_position_c_copia.x,camera_position_c.y - 0.5f,camera_position_c_copia.z,1.0f)))
+            {
+                camera_position_c= glm::vec4(camera_position_c.x,camera_position_c_copia.y,camera_position_c.z,1.0f) ;
+                gravidade_aux=1;
+            }
+            if(gravidade_aux)
+                gravidade = 0.0f;
+            else
+                gravidade=0.5f;
+
+        gravidade_aux=0;
+
+
+        //se houver intersecao com um objeto ao lado, nao entra dentro dele
         for(int i = 0;i<MAX_OBJETOS;i++)
             if(intersecao_AABB_PONTO(modelos_do_universo[i],camera_position_c))
             {
-                camera_position_c=camera_position_c_copia;
+                camera_position_c=  glm::vec4(camera_position_c_copia.x,camera_position_c.y,camera_position_c_copia.z,1.0f);
+
             }
-
-
 
 
 
@@ -456,12 +473,12 @@ int main(int argc, char* argv[])
         //quando pressionar, executa uma vez só.
         if(g_LeftMouseButtonPressed && aux_bullet){
 
-        createBullets("cube",camera_view_vector, camera_position_c,&cubeObj,k_bullet);
+            createBullets("cube",camera_view_vector, camera_position_c,&cubeObj,k_bullet);
 
-        if(k_bullet<MAX_BULLETS-1)//vai percorrendo o vetor, e reinicia ao chegar no final
-            k_bullet++;
-        else
-            k_bullet=0;
+            if(k_bullet<MAX_BULLETS-1)//vai percorrendo o vetor, e reinicia ao chegar no final
+                k_bullet++;
+            else
+                k_bullet=0;
 
         }
        if(g_LeftMouseButtonPressed)
@@ -515,35 +532,6 @@ int main(int argc, char* argv[])
 
 
 
-
-/*
-        #define SPHERE 0
-        #define BUNNY  1
-        #define PLANE  2
-
-        // Desenhamos o modelo da esfera
-        model = Matrix_Translate(-1.0f,0.0f,0.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, SPHERE);
-        DrawVirtualObject("sphere");
-
-        // Desenhamos o modelo do coelho
-        model = Matrix_Translate(1.0f,0.0f,0.0f)
-              * Matrix_Rotate_Z(g_AngleZ)
-              * Matrix_Rotate_Y(g_AngleY)
-              * Matrix_Rotate_X(g_AngleX);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, BUNNY);
-        DrawVirtualObject("bunny");
-
-
-        // Desenhamos o modelo do plano
-        model = Matrix_Translate(0.0f,-1.0f,0.0f)
-                    * Matrix_Scale(2.0f, 0.0f, 2.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, PLANE);
-        DrawVirtualObject("plane");
-*/
 
 
         // Pegamos um vértice com coordenadas de modelo (0.5, 0.5, 0.5, 1) e o
