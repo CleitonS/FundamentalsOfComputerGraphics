@@ -4,6 +4,9 @@
 
 #include <ctime>
 #include <cstdlib>
+#include "intersecao.h"
+
+
 
 
 extern GLint model_uniform;
@@ -72,7 +75,21 @@ void createBullets(char *name, glm::vec4 vec_direcao,glm::vec4 posIni,struct Obj
     printf("ERRO na criação de objeto tipo 'Bullet'\n");
 }
 
+void intersecao_bullets(glm::mat4 AABB2,struct ObjModel* Object)
+{
+    glm::vec4 vec_null =  glm::vec4(0.0f,1.0f,0.0f,0.0f);
+    glm::vec4 ponto_null =  glm::vec4(0.0f,10.0f,0.0f,1.0f);
 
+ for(int i = 0;i<MAX_BULLETS;i++)
+        {
+            if(intersecao_AABB_AABB(AABB2,listBullets[i].model))
+                {
+                printf("hit! %i\n",i);
+                    createBullets("null",vec_null,ponto_null,Object,i);
+                }
+        }
+
+}
 
 
 

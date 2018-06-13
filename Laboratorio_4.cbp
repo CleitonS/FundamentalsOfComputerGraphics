@@ -62,14 +62,14 @@
 			<Add option="lib\libglfw3.a -lgdi32 -lopengl32" />
 			<Add directory="lib" />
 		</Linker>
+		<Unit filename="include/Bullets.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="include/Bullets.h" />
 		<Unit filename="include/DEFINITIONS.h" />
 		<Unit filename="include/GLFW/glfw3.h" />
 		<Unit filename="include/GLFW/glfw3native.h" />
 		<Unit filename="include/KHR/khrplatform.h" />
-		<Unit filename="include/bullets.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Unit filename="include/data.h" />
 		<Unit filename="include/dejavufont.h" />
 		<Unit filename="include/glad/glad.h" />
@@ -335,6 +335,9 @@
 		<Unit filename="include/glm/vec3.hpp" />
 		<Unit filename="include/glm/vec4.hpp" />
 		<Unit filename="include/glm/vector_relational.hpp" />
+		<Unit filename="include/intersecao.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="include/matrices.h" />
 		<Unit filename="include/monster.h" />
 		<Unit filename="include/tiny_obj_loader.h" />

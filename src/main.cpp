@@ -49,6 +49,7 @@
 #include "DEFINITIONS.h"
 #include "monster.h"
 #include "Bullets.h"
+#include "intersecao.h"
 
 
 
@@ -430,19 +431,11 @@ int main(int argc, char* argv[])
         // efetivamente aplicadas em todos os pontos.
         glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
-/*
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(listMonster[0].model));
-        glUniform1i(object_id_uniform, listMonster[0].typeIlumination);
-        DrawVirtualObject(listMonster[0].name);
-        listMonster[0].UpdatePosition();
-        tempPrev = glfwGetTime();
 
-        */
         //quando pressionar, executa uma vez só.
         if(g_LeftMouseButtonPressed && aux_bullet){
 
         createBullets("cube",camera_view_vector, camera_position_c,&cubeObj,k_bullet);
-
 
         if(k_bullet<MAX_BULLETS-1)//vai percorrendo o vetor, e reinicia ao chegar no final
             k_bullet++;
@@ -455,6 +448,13 @@ int main(int argc, char* argv[])
        else
             aux_bullet=1;
 
+        // Desenhamos
+        model = Matrix_Translate(2.0f,0.0f,1.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, SPHERE);
+        DrawVirtualObject("cube");
+
+        intersecao_bullets(model,&sphereObj);
 
 
         UpdateAllBullets(deltaTempo);
@@ -470,12 +470,17 @@ int main(int argc, char* argv[])
 
 
 
+
+
         // Desenhamos o modelo do chão
         model = Matrix_Translate(0.0f, -1.0f,0.0f)
                     * Matrix_Scale(6.0f, 0.0f, 6.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
+
+
+
 
 
 
