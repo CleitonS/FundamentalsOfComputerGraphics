@@ -344,8 +344,18 @@ int main(int argc, char* argv[])
 
     //inicializando variaveis da camera
     glm::vec4 camera_position_c  =  glm::vec4(0.0f,0.0f,0.0f,1.0f);// Ponto "c", centro da câmera
-
+    glm::vec4 camera_position_c_copia  =  glm::vec4(0.0f,0.0f,0.0f,1.0f);
     glm::vec4 camera_view_vector =  glm::vec4(0.0f,0.0f,0.0f,0.0f); // Vetor "view", sentido para onde a câmera está virada
+
+    //inicializamos uma matriz com todos os modelos dos objetos em cena
+    glm::mat4 mat_vazia = Matrix_Identity();
+    mat_vazia=Matrix_Translate(0.0f,10.0f,0.0f);
+    glm::mat4 modelos_do_universo[MAX_OBJETOS];
+    for(int i= 0; i<MAX_OBJETOS;i++)
+        modelos_do_universo[i]=mat_vazia;
+
+
+
 
 
 
@@ -390,11 +400,22 @@ int main(int argc, char* argv[])
 
         glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
         glm::vec4 camera_vec_ortogonal   = crossproduct(camera_view_vector,camera_up_vector); //vetor para o moviemnto para os lados
-
+        camera_position_c_copia = camera_position_c;//para o caso de houver intersecao ocm um objeto
         camera_position_c  =  glm::vec4(camera_position_c.x + camera_view_vector.x*deltaTempo*move_frente + camera_vec_ortogonal.x*deltaTempo*move_lado ,
                                         camera_position_c.y,
                                         camera_position_c.z + camera_view_vector.z*deltaTempo*move_frente + camera_vec_ortogonal.z*deltaTempo*move_lado ,
                                         1.0f);// Ponto "c", centro da câmera
+
+        //se houver intersecao com um objeto, nao anda
+        for(int i = 0;i<MAX_OBJETOS;i++)
+            if(intersecao_AABB_PONTO(modelos_do_universo[i],camera_position_c))
+            {
+                camera_position_c=camera_position_c_copia;
+            }
+
+
+
+
 
          camera_view_vector = glm::vec4(x  + camera_view_vector.x*deltaTempo*move_frente + camera_vec_ortogonal.x*deltaTempo*move_lado,
                                        -y ,
@@ -448,21 +469,28 @@ int main(int argc, char* argv[])
        else
             aux_bullet=1;
 
-        // Desenhamos
-        model = Matrix_Translate(2.0f,0.0f,1.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, SPHERE);
-        DrawVirtualObject("cube");
 
-        intersecao_bullets(model,&sphereObj);
+
 
 
         UpdateAllBullets(deltaTempo);
         UpdateAllMonsters(deltaTempo);
 
+        //testa se acertou algum monstro
+        for(int i = 0; i< MAX_MONSTER;i++)
+            intersecao_bullets(listMonster[i].model);
 
 
         tempPrev = tempNow;
+
+         // objeto para testes
+        model = Matrix_Translate(3.0f, 0.0f,0.0f);
+
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, SPHERE);
+        DrawVirtualObject("cube");
+
+        modelos_do_universo[0]=model;
 
 
 
@@ -478,6 +506,7 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
+        modelos_do_universo[1]=model;
 
 
 

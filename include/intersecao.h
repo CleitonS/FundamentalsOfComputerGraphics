@@ -3,16 +3,13 @@
 
 bool intersecao_AABB_AABB(glm::mat4 AABB1, glm::mat4 AABB2);
 void Vertices_AABB(glm::mat4 AABB, glm::vec4 vertex_array[]);
+bool intersecao_AABB_PONTO(glm::mat4 AABB, glm::vec4 ponto);
 
 
 bool intersecao_AABB_AABB(glm::mat4 AABB1, glm::mat4 AABB2)
 {
-    //pegar o menor x,y,z de cada e fazer
-    /* (a.minX <= b.maxX && a.maxX >= b.minX) &&
-         (a.minY <= b.maxY && a.maxY >= b.minY) &&
-         (a.minZ <= b.maxZ && a.maxZ >= b.minZ)
-    */
-    //acha os vertices de cada box
+
+    //acha os vertices das box
     glm::vec4 vertex_array_1[8];
     Vertices_AABB(AABB1,vertex_array_1);
     glm::vec4 vertex_array_2[8];
@@ -30,6 +27,8 @@ bool intersecao_AABB_AABB(glm::mat4 AABB1, glm::mat4 AABB2)
     float maxX2 = vertex_array_2[0].x;
     float maxY2 = vertex_array_2[0].y;
     float maxZ2 = vertex_array_2[0].z;
+
+    //encontra os x,y,z min e max de cada box
 
     for(int i = 1;i<8;i++)
     {
@@ -63,12 +62,70 @@ bool intersecao_AABB_AABB(glm::mat4 AABB1, glm::mat4 AABB2)
             maxZ2 = vertex_array_2[i].z;
     }
 
+
+        //retorna se há intersecação
     return (minX1 <= maxX2 && maxX1 >= minX2) &&
          (minY1 <= maxY2 && maxY1 >= minY2) &&
          (minZ1 <= maxZ2 && maxZ1 >= minZ2);
 }
+
+
+
+bool intersecao_AABB_PONTO(glm::mat4 AABB, glm::vec4 ponto)
+{
+
+    //acha os vertices da box
+    glm::vec4 vertex_array[8];
+    Vertices_AABB(AABB,vertex_array);
+
+    float minX = vertex_array[0].x;
+    float minY = vertex_array[0].y;
+    float minZ = vertex_array[0].z;
+
+    float maxX = vertex_array[0].x;
+    float maxY = vertex_array[0].y;
+    float maxZ = vertex_array[0].z;
+
+    //acha os x,y,z min e max da box
+        for(int i = 1;i<8;i++)
+    {
+        if(vertex_array[i].x<minX)
+            minX = vertex_array[i].x;
+        if(vertex_array[i].y<minY)
+            minY = vertex_array[i].y;
+        if(vertex_array[i].z<minZ)
+            minZ = vertex_array[i].z;
+
+
+        if(vertex_array[i].x>maxX)
+            maxX = vertex_array[i].x;
+        if(vertex_array[i].y>maxY)
+            maxY = vertex_array[i].y;
+        if(vertex_array[i].z>maxZ)
+            maxZ = vertex_array[i].z;
+    }
+
+    //adiciona uma margem pra nao entrar de fato
+    minX-=0.2f;
+    minY-=0.2f;
+    minZ-=0.2f;
+    maxX+=0.2f;
+    maxY+=0.2f;
+    maxZ+=0.2f;
+
+    //retorna se ha intersecao
+    return (minX <= ponto.x && maxX >= ponto.x) &&
+         (minY <= ponto.y && maxY >= ponto.y) &&
+         (minZ <= ponto.z && maxZ >= ponto.z);
+
+
+}
+
+
+//acha os vertices de uma box e guarda no array dado
 void Vertices_AABB(glm::mat4 AABB, glm::vec4 vertex_array[])
 {
+
 
     glm::vec4  vertice= glm::vec4(-1.0f,-1.0f,-1.0f,1.0f);
      vertex_array[0] = AABB*vertice;
@@ -93,11 +150,6 @@ void Vertices_AABB(glm::mat4 AABB, glm::vec4 vertex_array[])
 
       vertice= glm::vec4(1.0f,1.0f,1.0f,1.0f);
      vertex_array[7] = AABB*vertice;
-
-
-
-
-
 
 }
 
