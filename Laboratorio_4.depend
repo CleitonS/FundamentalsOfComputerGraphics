@@ -43,6 +43,7 @@
 	<glm/vec4.hpp>
 	<glm/gtc/type_ptr.hpp>
 	<tiny_obj_loader.h>
+	<stb_image.h>		  
 	"utils.h"
 	"matrices.h"
 
@@ -484,7 +485,24 @@
 	<fstream>
 	<sstream>
 
-1525867176 c:\users\aluno\desktop\laboratorio_4_codigo_fonte\include\utils.h
+
+1526903671 c:\users\aluno\desktop\laboratorio_4_codigo_fonte\include\stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1526903671 c:\users\aluno\desktop\laboratorio_4_codigo_fonte\include\utils.h
 	<cstdio>
 
 1525867176 c:\users\aluno\desktop\laboratorio_4_codigo_fonte\include\matrices.h
@@ -510,7 +528,7 @@
 1525867176 c:\users\aluno\desktop\laboratorio_4_codigo_fonte\include\glm\matrix.hpp
 	"detail/func_matrix.hpp"
 	
-1526903671 source:c:\users\aluno\desktop\laboratorio_5_codigo_fonte\src\stb_image.cpp
+1526903671 source:c:\users\aluno\desktop\laboratorio_4_codigo_fonte\src\stb_image.cpp
 	"stb_image.h"
 
 1525867176 source:c:\users\aluno\desktop\laboratorio_4_codigo_fonte\src\textrendering.cpp
