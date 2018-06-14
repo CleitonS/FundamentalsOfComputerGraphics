@@ -1,6 +1,6 @@
 #version 330 core
 
-#include "DEFINITIONS.h"
+
 
 // Atributos de fragmentos recebidos como entrada ("in") pelo Fragment Shader.
 // Neste exemplo, este atributo foi gerado pelo rasterizador como a
@@ -25,12 +25,21 @@ uniform sampler2D TextureImage2;
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
 uniform vec4 bbox_min;
 uniform vec4 bbox_max;
-/*
+
+
+
 // Identificador que define qual objeto está sendo desenhado no momento
-#define SPHERE 0
-#define BUNNY  1
-#define PLANE  2
-*/
+#define SPHERE  0
+#define BUNNY   1
+#define PLANE   2
+#define CUBE    3
+#define BASIC   3
+#define BACK    4
+#define GROUND  5
+
+#define MONSTER_GREEN 6
+#define MONSTER_BLUE  7
+#define MONSTER_RED	  8
 
 uniform int object_id;
 
