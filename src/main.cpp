@@ -288,6 +288,7 @@ int main(int argc, char* argv[])
 	
     // Carregamos duas imagens para serem utilizadas como textura
 	//https://br.freepik.com
+	printf("Carregando textura...\n");
     LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
     LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");		  // TextureImage1
 	
