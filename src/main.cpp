@@ -137,6 +137,9 @@ struct SceneObject
     int          num_indices; // Número de índices do objeto dentro do vetor indices[] definido em BuildTrianglesAndAddToVirtualScene()
     GLenum       rendering_mode; // Modo de rasterização (GL_TRIANGLES, GL_TRIANGLE_STRIP, etc.)
     GLuint       vertex_array_object_id; // ID do VAO onde estão armazenados os atributos do modelo
+    glm::vec3    bbox_min; // Axis-Aligned Bounding Box do objeto
+    glm::vec3    bbox_max;
+
 };
 
 
@@ -201,6 +204,8 @@ GLint model_uniform;
 GLint view_uniform;
 GLint projection_uniform;
 GLint object_id_uniform;
+GLint bbox_min_uniform;
+GLint bbox_max_uniform;
 
 // Número de texturas carregadas pela função LoadTextureImage()
 GLuint g_NumLoadedTextures = 0;
@@ -289,11 +294,11 @@ int main(int argc, char* argv[])
     // Carregamos duas imagens para serem utilizadas como textura
 	//https://br.freepik.com
 	printf("Carregando texturas...\n");
-    LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
-    LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");		  // TextureImage1
+    //LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
+    //LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");		  // TextureImage1
 	
-	//LoadTextureImage("../../data/tc-grassTexture.jpg");      // TextureImage0
-    //LoadTextureImage("../../data/tc-backTexture.jpg");		  // TextureImage1	
+	LoadTextureImage("../../data/grassTexture.jpg");      // TextureImage0
+    LoadTextureImage("../../data/earth_daymap_surface.jpg");		  // TextureImage1	
 
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
     // para renderização. Veja slide 217 e 219 do documento no Moodle
