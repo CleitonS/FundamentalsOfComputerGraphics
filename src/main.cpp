@@ -162,6 +162,8 @@ float g_AngleZ = 0.0f;
 //Movimentação do personagem
 float move_frente = 0.0f;
 float move_lado = 0.0f;
+bool pular = false;
+
 
 
 // "g_LeftMouseButtonPressed = true" se o usuário está com o botão esquerdo do mouse
@@ -356,9 +358,19 @@ int main(int argc, char* argv[])
 
 
    //define a velocidade que o player cai
-   float gravidade = 0.5f;
+   float gravidade = GRAVIDADE;
    //permite que quando o player está em cima de algo, ele n caia mais
-   int gravidade_aux = 0;
+   bool gravidade_aux = false;
+
+   //define quanto falta de altura para subir
+   float altura_pulo = ALTURA_PULO;
+
+   bool no_chao = false;
+   bool pulando = false;
+
+   //define se o pulo ta permintindo, vai ser false quando caindo
+   bool pulo_enable = false;
+
 
 
 
@@ -409,19 +421,45 @@ int main(int argc, char* argv[])
                                         camera_position_c.z + camera_view_vector.z*deltaTempo*move_frente + camera_vec_ortogonal.z*deltaTempo*move_lado ,
                                         1.0f);// Ponto "c", centro da câmera
 
+
+        if(no_chao||pulando)//se nao estiver caindo
+            pulo_enable=true;
+        else
+            pulo_enable=false;
+
+        if(!pulo_enable)//se estiver caindo, não pode pular ou continuar pulando
+            pular=false;
+
+
+        if(pular)
+        {
+            camera_position_c = camera_position_c + glm::vec4(0.0f,VELO_PULO*deltaTempo,0.0f,0.0f);//sobe um pouco por rendering
+            altura_pulo-=VELO_PULO;//quanto falta pular
+            no_chao = false;
+            pulando = true;
+
+            if(altura_pulo <= 0)
+            {
+                altura_pulo = ALTURA_PULO;
+                pulando=false;
+
+            }
+        }
+
         //se houver um objeto abaixo, nao cai
-         for(int i = 0;i<MAX_OBJETOS;i++)
+         for(int i = 0;i<MAX_OBJETOS;i++)                                                                         //   \/ = altura player
             if(intersecao_AABB_PONTO(modelos_do_universo[i],glm::vec4(camera_position_c_copia.x,camera_position_c.y - 0.5f,camera_position_c_copia.z,1.0f)))
             {
                 camera_position_c= glm::vec4(camera_position_c.x,camera_position_c_copia.y,camera_position_c.z,1.0f) ;
-                gravidade_aux=1;
+                gravidade_aux=true;
+                no_chao = true;
             }
             if(gravidade_aux)
                 gravidade = 0.0f;
             else
-                gravidade=0.5f;
+                gravidade=GRAVIDADE;
 
-        gravidade_aux=0;
+        gravidade_aux=false;
 
 
         //se houver intersecao com um objeto ao lado, nao entra dentro dele
@@ -431,6 +469,7 @@ int main(int argc, char* argv[])
                 camera_position_c=  glm::vec4(camera_position_c_copia.x,camera_position_c.y,camera_position_c_copia.z,1.0f);
 
             }
+
 
 
 
@@ -1221,6 +1260,13 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         move_lado = -VELOCIDADE_PLAYER;
     if (key == GLFW_KEY_A && action == GLFW_RELEASE)
         move_lado = 0.0f;
+
+
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+        pular = true;
+
+
+
 
     // Se o usuário apertar a tecla espaço, resetamos os ângulos de Euler para zero.
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)

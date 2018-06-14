@@ -9,9 +9,12 @@
 #define PHI    3.1415926535
 /**/
 
-#define VELOCIDADE_PLAYER 1.0f;
+#define VELOCIDADE_PLAYER 1.0f
 #define MAX_MONSTER 4
 #define MAX_BULLETS 30
 #define MAX_OBJETOS 20
+#define ALTURA_PULO 2000.0f
+#define GRAVIDADE 1.0f
+#define VELO_PULO 2.0f //deve ser maior que gravidade
 
 
