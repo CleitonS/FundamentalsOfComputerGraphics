@@ -42,7 +42,7 @@
 
 // Headers da biblioteca para carregar modelos obj
 #include <tiny_obj_loader.h>
-
+#include <stb_image.h>
 // Headers locais, definidos na pasta "include/"
 #include "utils.h"
 #include "matrices.h"
@@ -50,7 +50,7 @@
 #include "monster.h"
 #include "Bullets.h"
 #include "intersecao.h"
-#include <stb_image.h>
+
 
 
 
