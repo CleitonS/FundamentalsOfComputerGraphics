@@ -61,7 +61,7 @@ void createMonster(char *name, int typeIlumination, ObjModel *Obj,int i){
 			struct Monster newMonster;
 			newMonster.create(name, typeIlumination,Obj,randomNumber() );
             listMonster[i] = newMonster;
-
+            return;
     }
     printf("ERRO na criação de objeto tipo 'Monster'\n");
 }
@@ -81,4 +81,14 @@ void Destroi_monstro(int i)
         monstro_NULL.create("NULL",0,listMonster[i].Obj,20.0f);
         listMonster[i] = monstro_NULL;
     }
+}
+
+
+void RespawnMonsters()
+{
+    for(int i = 0; i<MAX_MONSTER;i++)
+        if(listMonster[i].name == "NULL"){
+                listMonster[i].enable = false;
+            createMonster("cube", 1, listMonster[i].Obj,i);
+        }
 }

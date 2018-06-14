@@ -205,15 +205,16 @@ GLint object_id_uniform;
 
 
 struct Monster listMonster[MAX_MONSTER];
-void createMonster(char *name, int typeIlumination, ObjModel *Obj);
+void createMonster(char *name, int typeIlumination, ObjModel *Obj,int i);
 void UpdateAllMonsters(float interval);
 
 struct Bullet listBullets[MAX_BULLETS];
 void createBullets(char *name, glm::vec4 vec_direcao,glm::vec4 posIni,struct ObjModel* Object);
 void UpdateAllBullets(float interval);
 
-
-
+float monsterRespawnOld = 0.0f;
+ float monsterRespawnNew =0.0f;
+float deltaTempoRespawn= 0.0f;
 
 int main(int argc, char* argv[])
 {
@@ -319,6 +320,8 @@ int main(int argc, char* argv[])
 
 
 
+
+
     if ( argc > 1 )
     {
         ObjModel model(argv[1]);
@@ -374,6 +377,8 @@ int main(int argc, char* argv[])
 
 
 
+
+
     // Ficamos em loop, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
     {
@@ -407,6 +412,17 @@ int main(int argc, char* argv[])
         //variaveis para o movimento de objetos
         float tempNow = glfwGetTime();
         float deltaTempo = tempNow - tempPrev;
+
+        //A cada 1 segundo, revive monstros mortos
+        deltaTempoRespawn = monsterRespawnNew - monsterRespawnOld;
+        if(deltaTempoRespawn >= 1.0f)
+        {
+            monsterRespawnOld = glfwGetTime();
+            RespawnMonsters();
+
+        }
+         monsterRespawnNew = glfwGetTime();
+
 
 
         // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.

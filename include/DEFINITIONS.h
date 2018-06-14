@@ -10,7 +10,7 @@
 /**/
 
 #define VELOCIDADE_PLAYER 1.0f
-#define MAX_MONSTER 4
+#define MAX_MONSTER 10
 #define MAX_BULLETS 30
 #define MAX_OBJETOS 20
 #define ALTURA_PULO 5.0f
