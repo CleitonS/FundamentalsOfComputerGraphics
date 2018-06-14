@@ -16,6 +16,7 @@
 					<Add option="-Wall" />
 					<Add option="-std=c++11" />
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -28,6 +29,7 @@
 					<Add option="-O2" />
 					<Add option="-Wall" />
 					<Add option="-std=c++11" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -44,6 +46,7 @@
 					<Add option="-Wall" />
 					<Add option="-std=c++11" />
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="lib-linux/libglfw3.a -lrt -lm -ldl -lX11 -lpthread -lXrandr -lXinerama -lXxf86vm -lXcursor" />
@@ -59,6 +62,10 @@
 			<Add option="lib\libglfw3.a -lgdi32 -lopengl32" />
 			<Add directory="lib" />
 		</Linker>
+		<Unit filename="include/Bullets.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include/Bullets.h" />
 		<Unit filename="include/DEFINITIONS.h" />
 		<Unit filename="include/GLFW/glfw3.h" />
 		<Unit filename="include/GLFW/glfw3native.h" />
@@ -328,9 +335,17 @@
 		<Unit filename="include/glm/vec3.hpp" />
 		<Unit filename="include/glm/vec4.hpp" />
 		<Unit filename="include/glm/vector_relational.hpp" />
+		<Unit filename="include/intersecao.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="include/matrices.h" />
+		<Unit filename="include/monster.h" />
 		<Unit filename="include/tiny_obj_loader.h" />
 		<Unit filename="include/utils.h" />
+		<Unit filename="src/bullets.cpp">
+			<Option target="Release" />
+			<Option target="Linux" />
+		</Unit>
 		<Unit filename="src/glad.c">
 			<Option compilerVar="CC" />
 		</Unit>
