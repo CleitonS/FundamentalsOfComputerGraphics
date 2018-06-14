@@ -50,7 +50,7 @@
 #include "monster.h"
 #include "Bullets.h"
 #include "intersecao.h"
-
+#include <stb_image.h>
 
 
 
