@@ -8,6 +8,7 @@
 // "main.cpp".
 in vec4 position_world;
 in vec4 normal;
+in vec4 position_model;
 
 // Matrizes computadas no código C++ e enviadas para a GPU
 uniform mat4 model;
