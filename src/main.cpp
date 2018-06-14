@@ -288,8 +288,8 @@ int main(int argc, char* argv[])
 	
     // Carregamos duas imagens para serem utilizadas como textura
 	//https://br.freepik.com
-    LoadTextureImage("../../data/grassTexture.jpg");      // TextureImage0
-    LoadTextureImage("../../data/backTexture.jpg");		  // TextureImage1
+    LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
+    LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");		  // TextureImage1
 	
 
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
