@@ -86,24 +86,20 @@ void main()
 
 	if ( object_id == GROUND )
     {		
-		//Textura
-        float minx = bbox_min.x;
-        float maxx = bbox_max.x;
-        float miny = bbox_min.y;
-        float maxy = bbox_max.y;
-        float minz = bbox_min.z;
-        float maxz = bbox_max.z;
 
-        U = (position_model.x - minx) / (maxx - minx);
-        V = (position_model.y - minx) / (maxy - miny);	
-		
-		
-		vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
-		float lambert = max(0,dot(n,l));
-		color = Kd0 * (lambert + 0.01);
-		color = pow(color, vec3(1.0,1.0,1.0)/2.2);
+        U = texcoords.x;
+        V = texcoords.y;
+		color = texture(TextureImage0, vec2(U,V)).rgb;
 			
     }
+	else if ( object_id == BACK )
+    {		
+
+        U = texcoords.x;
+        V = texcoords.y;
+		color = texture(TextureImage1, vec2(U,V)).rgb;
+			
+    }	
 	else if ( object_id == MONSTER_GREEN ||
 			  object_id == MONSTER_BLUE  ||
 			  object_id == MONSTER_RED	)
