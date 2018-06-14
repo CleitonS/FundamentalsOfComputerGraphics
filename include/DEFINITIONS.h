@@ -8,7 +8,6 @@
 #define BACK    4
 #define GROUND  5
 
-
 #define MONSTER_GREEN 6
 #define MONSTER_BLUE  7
 #define MONSTER_RED	  8
