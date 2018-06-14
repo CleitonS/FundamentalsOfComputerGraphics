@@ -282,7 +282,7 @@ int main(int argc, char* argv[])
     const GLubyte *glslversion = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
     printf("GPU: %s, %s, OpenGL %s, GLSL %s\n", vendor, renderer, glversion, glslversion);
-	
+	LoadShadersFromFiles();
     /*Inicializa Seed para a utilização de funções randomicas*/
     srand(time(0));
 	
@@ -297,7 +297,7 @@ int main(int argc, char* argv[])
     // para renderização. Veja slide 217 e 219 do documento no Moodle
     // "Aula_03_Rendering_Pipeline_Grafico.pdf".
     //
-    LoadShadersFromFiles();
+    
     ObjModel planeObj("../../data/plane.obj");
     ComputeNormals(&planeObj);
     BuildTrianglesAndAddToVirtualScene(&planeObj);
