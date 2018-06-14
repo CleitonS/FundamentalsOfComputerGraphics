@@ -13,8 +13,8 @@
 #define MAX_MONSTER 4
 #define MAX_BULLETS 30
 #define MAX_OBJETOS 20
-#define ALTURA_PULO 2000.0f
-#define GRAVIDADE 1.0f
-#define VELO_PULO 2.0f //deve ser maior que gravidade
+#define ALTURA_PULO 5.0f
+#define GRAVIDADE 2.0f
+#define VELO_PULO 4.0f //deve ser maior que gravidade
 
 

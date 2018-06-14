@@ -17,13 +17,14 @@ struct Monster{
 	struct ObjModel *Obj;
 	bool enable = false;
 	float velocidade;
+	int life = 5;
     public:
         Monster(){
             enable = false;
         }
-        create(char *nameDesc, int typeIluminationIn, struct ObjModel* Object){
-            float posIni = randomNumber();
-            printf("Pos Inic: %f", posIni);
+        create(char *nameDesc, int typeIluminationIn, struct ObjModel* Object,float posIni){
+             posIni = posIni;
+            //printf("Pos Inic: %f", posIni);
 
             model = Matrix_Identity() *
                     Matrix_Translate(posIni,0.0f,-6.0f) *
@@ -54,15 +55,13 @@ void UpdateAllMonsters(float interval){
 }
 
 /*função para criar um novo objeto*/
-void createMonster(char *name, int typeIlumination, ObjModel *Obj){
-    for(int i = 0; i< MAX_MONSTER; i++){
+void createMonster(char *name, int typeIlumination, ObjModel *Obj,int i){
         if (listMonster[i].enable == false ){
                 printf("Criando\n");
 			struct Monster newMonster;
-			newMonster.create(name, typeIlumination,Obj );
+			newMonster.create(name, typeIlumination,Obj,randomNumber() );
             listMonster[i] = newMonster;
-            return;
-        }
+
     }
     printf("ERRO na criação de objeto tipo 'Monster'\n");
 }
@@ -71,3 +70,15 @@ float randomNumber(){
     return ((rand())%4 - 2) + 0.1*((rand())%9) + 0.01*((rand())%9);
 }
 
+
+void Destroi_monstro(int i)
+{
+    struct Monster monstro_NULL;
+
+    listMonster[i].life--;
+    if(listMonster[i].life<=0)
+    {
+        monstro_NULL.create("NULL",0,listMonster[i].Obj,20.0f);
+        listMonster[i] = monstro_NULL;
+    }
+}

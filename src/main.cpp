@@ -301,10 +301,8 @@ int main(int argc, char* argv[])
     ObjModel cubeObj("../../data/cube.obj");
     ComputeNormals(&cubeObj);
     BuildTrianglesAndAddToVirtualScene(&cubeObj);
-    createMonster("cube", BASIC, &cubeObj );
-    createMonster("cube", PLANE, &cubeObj );
-    createMonster("cube", 0, &cubeObj );
-    createMonster("cube", 1, &cubeObj );
+    for(int i = 0;i<MAX_MONSTER;i++)
+        createMonster("cube", 1, &cubeObj,i);
 
     ObjModel sphereObj("../../data/sphere.obj");
     ComputeNormals(&sphereObj);
@@ -313,10 +311,11 @@ int main(int argc, char* argv[])
     int aux_bullet = 1;//auxiliar para atirar apenas uma bullet por clique
     int k_bullet = 0;//indicador do vetor das bullets
     glm::vec4 vec_null =  glm::vec4(0.0f,1.0f,0.0f,0.0f);
-    glm::vec4 ponto_null =  glm::vec4(0.0f,10.0f,0.0f,1.0f);
+    glm::vec4 ponto_null =  glm::vec4(20.0f,10.0f,0.0f,1.0f);
 
     for(int i = 0;i<MAX_BULLETS;i++)
         createBullets("null",vec_null,ponto_null,&sphereObj,i); //inicializa bullets invisiveis e longe
+
 
 
 
@@ -353,6 +352,7 @@ int main(int argc, char* argv[])
     glm::mat4 mat_vazia = Matrix_Identity();
     mat_vazia=Matrix_Translate(0.0f,10.0f,0.0f);
     glm::mat4 modelos_do_universo[MAX_OBJETOS];
+
     for(int i= 0; i<MAX_OBJETOS;i++)
         modelos_do_universo[i]=mat_vazia;
 
@@ -422,10 +422,7 @@ int main(int argc, char* argv[])
                                         1.0f);// Ponto "c", centro da câmera
 
 
-        if(no_chao||pulando)//se nao estiver caindo
-            pulo_enable=true;
-        else
-            pulo_enable=false;
+        pulo_enable=(no_chao||pulando);//se nao estiver caindo
 
         if(!pulo_enable)//se estiver caindo, não pode pular ou continuar pulando
             pular=false;
@@ -433,10 +430,10 @@ int main(int argc, char* argv[])
 
         if(pular)
         {
-            camera_position_c = camera_position_c + glm::vec4(0.0f,VELO_PULO*deltaTempo,0.0f,0.0f);//sobe um pouco por rendering
-            altura_pulo-=VELO_PULO;//quanto falta pular
-            no_chao = false;
+            camera_position_c = camera_position_c + glm::vec4(0.0f,VELO_PULO*deltaTempo,0.0f,0.0f);
+            altura_pulo-=(VELO_PULO*deltaTempo);//quanto falta pular
             pulando = true;
+            no_chao = false;
 
             if(altura_pulo <= 0)
             {
@@ -447,28 +444,35 @@ int main(int argc, char* argv[])
         }
 
         //se houver um objeto abaixo, nao cai
-         for(int i = 0;i<MAX_OBJETOS;i++)                                                                         //   \/ = altura player
-            if(intersecao_AABB_PONTO(modelos_do_universo[i],glm::vec4(camera_position_c_copia.x,camera_position_c.y - 0.5f,camera_position_c_copia.z,1.0f)))
+         for(int i = 0;i<MAX_OBJETOS;i++)
+        {
+
+            if(intersecao_AABB_PONTO(modelos_do_universo[i],glm::vec4(camera_position_c_copia.x,
+                                                                      camera_position_c.y - 0.5f, //altura player
+                                                                      camera_position_c_copia.z,  1.0f)))
             {
-                camera_position_c= glm::vec4(camera_position_c.x,camera_position_c_copia.y,camera_position_c.z,1.0f) ;
-                gravidade_aux=true;
-                no_chao = true;
+                            camera_position_c= glm::vec4(camera_position_c.x,
+                                                         camera_position_c_copia.y,
+                                                         camera_position_c.z,1.0f) ;
+                            gravidade_aux=true;
+                            no_chao = true;
             }
+        }
             if(gravidade_aux)
                 gravidade = 0.0f;
             else
                 gravidade=GRAVIDADE;
+
 
         gravidade_aux=false;
 
 
         //se houver intersecao com um objeto ao lado, nao entra dentro dele
         for(int i = 0;i<MAX_OBJETOS;i++)
-            if(intersecao_AABB_PONTO(modelos_do_universo[i],camera_position_c))
-            {
-                camera_position_c=  glm::vec4(camera_position_c_copia.x,camera_position_c.y,camera_position_c_copia.z,1.0f);
-
-            }
+            if(intersecao_AABB_PONTO(modelos_do_universo[i],camera_position_c - glm::vec4(0.0f,0.5f,0.0f,0.0f)))
+                camera_position_c =  glm::vec4(camera_position_c_copia.x,
+                                              camera_position_c.y ,
+                                              camera_position_c_copia.z,   1.0f);
 
 
 
@@ -510,7 +514,8 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
         //quando pressionar, executa uma vez só.
-        if(g_LeftMouseButtonPressed && aux_bullet){
+        if(g_LeftMouseButtonPressed && aux_bullet)
+        {
 
             createBullets("cube",camera_view_vector, camera_position_c,&cubeObj,k_bullet);
 
@@ -534,8 +539,12 @@ int main(int argc, char* argv[])
 
         //testa se acertou algum monstro
         for(int i = 0; i< MAX_MONSTER;i++)
-            intersecao_bullets(listMonster[i].model);
+            if(intersecao_bullets(listMonster[i].model))
+                Destroi_monstro(i);
 
+
+        for(int i = 0 ; i<MAX_OBJETOS;i++)
+            intersecao_bullets(modelos_do_universo[i]);
 
         tempPrev = tempNow;
 

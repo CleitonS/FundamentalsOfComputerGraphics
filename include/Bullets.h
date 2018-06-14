@@ -13,7 +13,7 @@ extern GLint model_uniform;
 extern struct Bullet listBullets[MAX_BULLETS];//guarda apena MAX_BULLETS de tiro, após, começa a reescrever;
 extern void DrawVirtualObject(char* object_name);
 extern GLint object_id_uniform;
-void intersecao_bullets(glm::mat4 AABB2,struct ObjModel* Object);
+bool intersecao_bullets(glm::mat4 AABB2);
 
 
 
@@ -79,19 +79,23 @@ void createBullets(char *name, glm::vec4 vec_direcao,glm::vec4 posIni,struct Obj
 
 //testa a intersecao de todas as bullets com a box passada,
 //fazendo a bullet desaparecer quando acertar
-void intersecao_bullets(glm::mat4 AABB2)
+bool intersecao_bullets(glm::mat4 AABB2)
 {
     glm::vec4 vec_null =  glm::vec4(0.0f,1.0f,0.0f,0.0f);
-    glm::vec4 ponto_null =  glm::vec4(0.0f,10.0f,0.0f,1.0f);
+    glm::vec4 ponto_null =  glm::vec4(20.0f,10.0f,0.0f,1.0f);
+    bool bullet_hit = false;
 
  for(int i = 0;i<MAX_BULLETS;i++)
         {
             if(intersecao_AABB_AABB(AABB2,listBullets[i].model))
                 {
-                printf("hit! %i\n",i);
                     createBullets("null",vec_null,ponto_null,listBullets[i].Obj,i);//ao acertar, a bullet desaparece
+                    bullet_hit = true;
+
                 }
         }
+
+    return bullet_hit;
 
 }
 
