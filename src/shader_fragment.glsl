@@ -94,10 +94,24 @@ void main()
 		color = pow(color, vec3(1.0,1.0,1.0)/2.2);
 			
     }
-	else if ( object_id == MONSTER )
+	else if ( object_id == MONSTER_GREEN ||
+			  object_id == MONSTER_BLUE  ||
+			  object_id == MONSTER_RED	)
 	{
         // Propriedades espectrais do monstro
-        Kd = vec3 (0.08, 0.4, 0.8);
+        if(object_id == MONSTER_GREEN){
+			Kd = vec3 (0.08, 0.4, 0.8);
+		}
+		
+        if(object_id == MONSTER_BLUE){
+			Kd = vec3 (0.08, 0.4, 0.8);
+		}		
+		
+        if(object_id == MONSTER_RED){
+			Kd = vec3 (0.08, 0.4, 0.8);
+		}	
+
+		
         Ks = vec3(0.8, 0.8, 0.8);
         Ka = vec3(0.04,0.2,0.4);
         q = 32.0;		
