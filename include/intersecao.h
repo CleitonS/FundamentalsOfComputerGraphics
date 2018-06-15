@@ -6,7 +6,8 @@ void Vertices_AABB(glm::mat4 AABB, glm::vec4 vertex_array[]);
 bool intersecao_AABB_PONTO(glm::mat4 AABB, glm::vec4 ponto);
 
 
-bool intersecao_AABB_AABB(glm::mat4 AABB1, glm::mat4 AABB2)
+
+ bool intersecao_AABB_AABB(glm::mat4 AABB1, glm::mat4 AABB2)
 {
 
     //acha os vertices das box
@@ -71,6 +72,8 @@ bool intersecao_AABB_AABB(glm::mat4 AABB1, glm::mat4 AABB2)
 
 
 
+
+
 bool intersecao_AABB_PONTO(glm::mat4 AABB, glm::vec4 ponto)
 {
 
@@ -123,7 +126,7 @@ bool intersecao_AABB_PONTO(glm::mat4 AABB, glm::vec4 ponto)
 
 
 //acha os vertices de uma box e guarda no array dado
-void Vertices_AABB(glm::mat4 AABB, glm::vec4 vertex_array[])
+ void Vertices_AABB(glm::mat4 AABB, glm::vec4 vertex_array[])
 {
 
 

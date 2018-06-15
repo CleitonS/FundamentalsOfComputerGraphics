@@ -209,12 +209,24 @@ void createMonster(char *name, int typeIlumination, ObjModel *Obj,int i);
 void UpdateAllMonsters(float interval);
 
 struct Bullet listBullets[MAX_BULLETS];
-void createBullets(char *name, glm::vec4 vec_direcao,glm::vec4 posIni,struct ObjModel* Object);
+void createBullet(char *name, glm::vec4 vec_direcao,glm::vec4 posIni,struct ObjModel* Object);
 void UpdateAllBullets(float interval);
+
+glm::vec4 MovimentoPersonagem(glm::vec4 camera_position_c,glm::vec4 camera_view_vector,glm::vec4 camera_vec_ortogonal,
+                                                                            float deltaTempo,float move_frente,float move_lado,float gravidade);
+
+int  Intersecao_Monstros_muro(glm::mat4 muro);
+void intersecao_Bullets_Objetos_Monstros(glm::mat4 modelos_do_universo[MAX_OBJETOS]);
+glm::mat4 DesenhaChao(glm::mat4 model);
+glm::mat4  DesenhaMuro(glm::mat4 model);
+ void GameOver();
+
 
 float monsterRespawnOld = 0.0f;
  float monsterRespawnNew =0.0f;
 float deltaTempoRespawn= 0.0f;
+
+int vidaMuro = VIDA_MURO;
 
 int main(int argc, char* argv[])
 {
@@ -311,13 +323,13 @@ int main(int argc, char* argv[])
     ComputeNormals(&sphereObj);
     BuildTrianglesAndAddToVirtualScene(&sphereObj);
 
-    int aux_bullet = 1;//auxiliar para atirar apenas uma bullet por clique
+    bool aux_bullet =true;//auxiliar para atirar apenas uma bullet por clique
     int k_bullet = 0;//indicador do vetor das bullets
     glm::vec4 vec_null =  glm::vec4(0.0f,1.0f,0.0f,0.0f);
     glm::vec4 ponto_null =  glm::vec4(20.0f,10.0f,0.0f,1.0f);
 
     for(int i = 0;i<MAX_BULLETS;i++)
-        createBullets("null",vec_null,ponto_null,&sphereObj,i); //inicializa bullets invisiveis e longe
+        createBullet("null",vec_null,ponto_null,&sphereObj,i); //inicializa bullets invisiveis e longe
 
 
 
@@ -368,13 +380,13 @@ int main(int argc, char* argv[])
    bool gravidade_aux = false;
 
    //define quanto falta de altura para subir
-   float altura_pulo = ALTURA_PULO;
+   float altura_pulo_restante = ALTURA_PULO;
 
    bool no_chao = false;
    bool pulando = false;
 
    //define se o pulo ta permintindo, vai ser false quando caindo
-   bool pulo_enable = false;
+   bool nao_caindo = false;
 
 
 
@@ -431,31 +443,29 @@ int main(int argc, char* argv[])
         // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
 
 
-        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); //aponta para o "céu" (eito Y global)
         glm::vec4 camera_vec_ortogonal   = crossproduct(camera_view_vector,camera_up_vector); //vetor para o moviemnto para os lados
-        camera_position_c_copia = camera_position_c;//para o caso de houver intersecao ocm um objeto
-        camera_position_c  =  glm::vec4(camera_position_c.x + camera_view_vector.x*deltaTempo*move_frente + camera_vec_ortogonal.x*deltaTempo*move_lado ,
-                                        camera_position_c.y - gravidade*deltaTempo,
-                                        camera_position_c.z + camera_view_vector.z*deltaTempo*move_frente + camera_vec_ortogonal.z*deltaTempo*move_lado ,
-                                        1.0f);// Ponto "c", centro da câmera
+        camera_position_c_copia = camera_position_c;//para o caso de houver intersecao com um objeto
+        camera_position_c  =  MovimentoPersonagem(camera_position_c,camera_view_vector,
+                                                  camera_vec_ortogonal,deltaTempo,move_frente,move_lado,gravidade);// Ponto "c", centro da câmera
 
 
-        pulo_enable=(no_chao||pulando);//se nao estiver caindo
+        nao_caindo=(no_chao||pulando);//se nao estiver caindo
 
-        if(!pulo_enable)//se estiver caindo, não pode pular ou continuar pulando
+        if(!nao_caindo)//se estiver caindo, não pode pular ou continuar pulando
             pular=false;
 
 
         if(pular)
         {
             camera_position_c = camera_position_c + glm::vec4(0.0f,VELO_PULO*deltaTempo,0.0f,0.0f);
-            altura_pulo-=(VELO_PULO*deltaTempo);//quanto falta pular
+            altura_pulo_restante -= (VELO_PULO*deltaTempo);
             pulando = true;
             no_chao = false;
 
-            if(altura_pulo <= 0)
+            if(altura_pulo_restante <= 0)
             {
-                altura_pulo = ALTURA_PULO;
+                altura_pulo_restante = ALTURA_PULO;
                 pulando=false;
 
             }
@@ -535,7 +545,7 @@ int main(int argc, char* argv[])
         if(g_LeftMouseButtonPressed && aux_bullet)
         {
 
-            createBullets("cube",camera_view_vector, camera_position_c,&cubeObj,k_bullet);
+            createBullet("cube",camera_view_vector, camera_position_c,&cubeObj,k_bullet);
 
             if(k_bullet<MAX_BULLETS-1)//vai percorrendo o vetor, e reinicia ao chegar no final
                 k_bullet++;
@@ -543,11 +553,10 @@ int main(int argc, char* argv[])
                 k_bullet=0;
 
         }
-       if(g_LeftMouseButtonPressed)
-            aux_bullet = 0;
-       else
-            aux_bullet=1;
 
+
+
+        aux_bullet = !g_LeftMouseButtonPressed;
 
 
 
@@ -555,23 +564,16 @@ int main(int argc, char* argv[])
         UpdateAllBullets(deltaTempo);
         UpdateAllMonsters(deltaTempo);
 
-        //testa se acertou algum monstro ou um monstro acertou o muro
-        for(int i = 0; i< MAX_MONSTER;i++)
-        {
-            if(intersecao_bullets(listMonster[i].model))
-                Destroi_monstro(i);
 
-            if (intersecao_AABB_AABB(listMonster[i].model,modelos_do_universo[1]))
+        vidaMuro -= Intersecao_Monstros_muro(modelos_do_universo[1]);
+
+        if(vidaMuro <= 0)
             {
-                printf("GAME OVER\n");
-                for(int j=0;j<LIFE_MONSTER;j++)
-                    Destroi_monstro(i);
+                GameOver();
+                vidaMuro = VIDA_MURO; //tirar na versao final
             }
-        }
 
-        //testa se acertou algum objeto
-        for(int i = 0 ; i<MAX_OBJETOS;i++)
-            intersecao_bullets(modelos_do_universo[i]);
+        intersecao_Bullets_Objetos_Monstros(modelos_do_universo);
 
 
 
@@ -585,27 +587,9 @@ int main(int argc, char* argv[])
 
 
 
+        modelos_do_universo[0] = DesenhaChao(model);
+        modelos_do_universo[1] = DesenhaMuro(model);
 
-
-
-        // Desenhamos o modelo do chão
-        model = Matrix_Translate(0.0f, -1.0f,0.0f)
-                    * Matrix_Scale(6.0f, 0.0f, 6.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, PLANE);
-        DrawVirtualObject("plane");
-        modelos_do_universo[0]=model;
-
-
-        //MURO
-        model = Matrix_Translate(0.0f, 0.0f,5.0f)
-                * Matrix_Scale(6.0f,1.0f,1.0f);
-
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, SPHERE);
-        DrawVirtualObject("cube");
-
-        modelos_do_universo[1]=model;
 
 
 
@@ -1623,10 +1607,78 @@ void PrintObjModelInfo(ObjModel* model)
   }
 }
 
+glm::vec4 MovimentoPersonagem(glm::vec4 camera_position_c,glm::vec4 camera_view_vector,glm::vec4 camera_vec_ortogonal,
+                                                                            float deltaTempo,float move_frente,float move_lado,float gravidade)
+{
+
+    return glm::vec4(camera_position_c.x + camera_view_vector.x*deltaTempo*move_frente + camera_vec_ortogonal.x*deltaTempo*move_lado ,
+                    camera_position_c.y - gravidade*deltaTempo,
+                    camera_position_c.z + camera_view_vector.z*deltaTempo*move_frente + camera_vec_ortogonal.z*deltaTempo*move_lado ,
+                    1.0f);//
+}
+
+
+int  Intersecao_Monstros_muro(glm::mat4 muro){
+
+        int monstrosNoMuro = 0;
+
+        for(int i = 0; i< MAX_MONSTER;i++)
+        {
+
+            if (intersecao_AABB_AABB(listMonster[i].model,muro))
+            {
+                monstrosNoMuro++;
+                for(int j=0;j<LIFE_MONSTER;j++)
+                    Destroi_monstro(i);
+            }
+        }
+
+        return monstrosNoMuro;
+
+}
+
+void intersecao_Bullets_Objetos_Monstros(glm::mat4 modelos_do_universo[MAX_OBJETOS]){
+
+        for(int i = 0 ; i<MAX_OBJETOS;i++)
+            intersecao_bullets(modelos_do_universo[i]);
+
+        for(int i = 0 ; i<MAX_MONSTER;i++)
+            if(intersecao_bullets(listMonster[i].model))
+                Destroi_monstro(i);
+}
+
+glm::mat4 DesenhaChao(glm::mat4 model){
 
 
 
+        model = Matrix_Translate(0.0f, -1.0f,0.0f)
+                    * Matrix_Scale(6.0f, 0.0f, 6.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, PLANE);
+        DrawVirtualObject("plane");
 
+        return model;
+}
+
+glm::mat4  DesenhaMuro(glm::mat4 model){
+
+
+
+        model = Matrix_Translate(0.0f, 0.0f,5.0f)
+                * Matrix_Scale(6.0f,1.0f,1.0f);
+
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, SPHERE);
+        DrawVirtualObject("cube");
+
+        return model;
+}
+
+ void GameOver(){
+
+    printf("GAME OVER!\n"); //realmente acabar o jogo
+
+ }
 
 // set makeprg=cd\ ..\ &&\ make\ run\ >/dev/null
 // vim: set spell spelllang=pt_br :

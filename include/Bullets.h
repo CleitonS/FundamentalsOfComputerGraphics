@@ -64,7 +64,7 @@ void UpdateAllBullets(float interval){
 }
 
 /*função para criar um novo objeto*/
-void createBullets(char *name, glm::vec4 vec_direcao,glm::vec4 posIni,struct ObjModel* Object, int i){
+void createBullet(char *name, glm::vec4 vec_direcao,glm::vec4 posIni,struct ObjModel* Object, int i){
 
 
 			struct Bullet newBullet;
@@ -89,7 +89,7 @@ bool intersecao_bullets(glm::mat4 AABB2)
         {
             if(intersecao_AABB_AABB(AABB2,listBullets[i].model))
                 {
-                    createBullets("null",vec_null,ponto_null,listBullets[i].Obj,i);//ao acertar, a bullet desaparece
+                    createBullet("null",vec_null,ponto_null,listBullets[i].Obj,i);//ao acertar, a bullet desaparece
                     bullet_hit = true;
 
                 }
