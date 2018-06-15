@@ -75,12 +75,12 @@ void main()
     vec4 v = normalize(camera_position - p);
 
     // Vetor que define o sentido da reflexão especular ideal.
-    vec4 r = -l+2*n*(dot(n,l)); 
-    
+    vec4 r = -l+2*n*(dot(n,l));
+
 	// Coordenadas de textura U e V
     float U = 0.0;
     float V = 0.0;
-	
+
     // Parâmetros que definem as propriedades espectrais da superfície
     vec3 Kd; // Refletância difusa
     vec3 Ks; // Refletância especular
@@ -91,87 +91,70 @@ void main()
 	vec3 lambert_diffuse_term;
 	vec3 ambient_term;
 	vec3 phong_specular_term;
-	vec3 texturaOBJ = vec3(0.0,0.0,0.0);  
-		
+	vec3 texturaOBJ = vec3(0.0,0.0,0.0);
+
 	if ( object_id == GROUND )
-    {		
+    {
 
         U = texcoords.x;
         V = texcoords.y;
 		color = texture(TextureImage0, vec2(U,V)).rgb;
-			
+
     }
 	else if ( object_id == BACK )
-    {		
+    {
 
         U = texcoords.x;
         V = texcoords.y;
 		color = texture(TextureImage1, vec2(U,V)).rgb;
-			
-    }		
+
+    }
 	else if ( object_id == MONSTER_GREEN ||
 			  object_id == MONSTER_BLUE  ||
 			  object_id == MONSTER_RED	)
-	{        
-        Ka = vec3(0.04,0.2,0.4);        
-		I = vec3(1.0,1.0,1.0);    						      // Espectro da fonte de iluminação    
-		Ia = vec3(0.2,0.2,0.2);   						      // Espectro da luz ambiente    
-		
+	{
+        Ka = vec3(0.0,0.0,0.0);
+		I = vec3(1.0,1.0,1.0);    						      // Espectro da fonte de iluminação
+		Ia = vec3(1.0,1.0,1.0);   						      // Espectro da luz ambiente
+
         // Propriedades espectrais do monstro
         if(object_id == MONSTER_GREEN){
-			Kd = vec3 (0.08, 0.4, 0.8);
-			Ks = vec3(0, 0, 0); //Objeto sem termo especular			
-		
-			float minx = bbox_min.x;
-			float maxx = bbox_max.x;
+			U = texcoords.x;
+			V = texcoords.y;
+			color = texture(TextureImage3, vec2(U,V)).rgb;
 
-			float miny = bbox_min.y;
-			float maxy = bbox_max.y;
-
-			float minz = bbox_min.z;
-			float maxz = bbox_max.z;
-
-			U = (position_model.x - minx) / (maxx - minx);
-			V = (position_model.y - minx) / (maxy - miny);
-			texturaOBJ = texture(TextureImage2, vec2(U,V)).rgb;
-		
 		}
-		
-        if(object_id == MONSTER_BLUE){
-			Kd = vec3 (0.08, 0.4, 0.8);
-			Ks = vec3(0.3, 0.3, 0.3);
-			q = 16.0;
-			U = texcoords.x;
-			V = texcoords.y;
-			texturaOBJ = texture(TextureImage3, vec2(U,V)).rgb;			
-		
-		}		
-		
-        if(object_id == MONSTER_RED){
-			Kd = vec3 (0.08, 0.4, 0.8);
-			Ks = vec3(0.8, 0.8, 0.8);
-			q = 32.0;
-		
-			U = texcoords.x;
-			V = texcoords.y;
-			texturaOBJ = texture(TextureImage4, vec2(U,V)).rgb;
-		
-		}	
 
-		
-	
-		lambert_diffuse_term = Kd*I*(max(0,dot(n,l)));       // Termo difuso utilizando a lei dos cossenos de Lambert
-		ambient_term = Ka*Ia;     						      // Termo ambiente    
-		phong_specular_term  = Ks*I*max(0,pow(dot(r,v) ,q)); // Termo especular utilizando o modelo de iluminação de Phong
-		color = lambert_diffuse_term + ambient_term + phong_specular_term + texturaOBJ;
-		
-		// Correção gamma, considerando monitor sRGB.
-		color = pow(color, vec3(1.0,1.0,1.0)/2.2);		
-		
+        if(object_id == MONSTER_BLUE){
+			Kd = vec3 (0.1, 0.1, 1.0);
+            lambert_diffuse_term = Kd*I*(max(0,dot(n,l)));       // Termo difuso utilizando a lei dos cossenos de Lambert
+            ambient_term = Ka*Ia;     						      // Termo ambiente
+            color = lambert_diffuse_term + ambient_term;
+
+            // Correção gamma, considerando monitor sRGB.
+            color = pow(color, vec3(1.0,1.0,1.0)/2.2);
+
+		}
+
+        if(object_id == MONSTER_RED){
+			Kd = vec3 (1.0, 0.1, 0.1);
+			Ks = vec3(0.8, 0.8, 0.8);
+			q = 64.0;
+            lambert_diffuse_term = Kd*I*(max(0,dot(n,l)));       // Termo difuso utilizando a lei dos cossenos de Lambert
+            ambient_term = Ka*Ia;     						      // Termo ambiente
+            phong_specular_term  = Ks*I*max(0,pow(dot(r,v) ,q)); // Termo especular utilizando o modelo de iluminação de Phong
+            color = lambert_diffuse_term + ambient_term + phong_specular_term;
+            // Correção gamma, considerando monitor sRGB.
+            color = pow(color, vec3(1.0,1.0,1.0)/2.2);
+
+		}
+
+
+
 	}
     else // Objeto desconhecido = preto
     {
-		color = vec3(0.0,0.0,0.0);		
-		
+		color = vec3(0.0,0.0,0.0);
+
     }
 }

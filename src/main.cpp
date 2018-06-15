@@ -291,24 +291,24 @@ int main(int argc, char* argv[])
 	LoadShadersFromFiles();
     /*Inicializa Seed para a utilização de funções randomicas*/
     srand(time(0));
-	
+
     // Carregamos duas imagens para serem utilizadas como textura
 	//https://br.freepik.com
 	printf("Carregando texturas...\n");
     //LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
     //LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");		  // TextureImage1
-	
+
 	LoadTextureImage("../../data/grassTexture.jpg");      		// TextureImage0
-    LoadTextureImage("../../data/backTexture.jpg");	// TextureImage1	
-	LoadTextureImage("../../data/face1.png");	                // TextureImage2
-	LoadTextureImage("../../data/face2.png");	                // TextureImage3
-	LoadTextureImage("../../data/face3.png");	                // TextureImage4
+    LoadTextureImage("../../data/backTexture.jpg");	// TextureImage1
+	LoadTextureImage("../../data/face1.jpg");	                // TextureImage2
+	LoadTextureImage("../../data/face2.jpg");	                // TextureImage3
+	LoadTextureImage("../../data/face3.jpg");	                // TextureImage4
 
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
     // para renderização. Veja slide 217 e 219 do documento no Moodle
     // "Aula_03_Rendering_Pipeline_Grafico.pdf".
     //
-    
+
     ObjModel planeObj("../../data/plane.obj");
     ComputeNormals(&planeObj);
     BuildTrianglesAndAddToVirtualScene(&planeObj);
@@ -320,9 +320,9 @@ int main(int argc, char* argv[])
     ComputeNormals(&cubeObj);
     BuildTrianglesAndAddToVirtualScene(&cubeObj);
     createMonster("cube", MONSTER_GREEN, &cubeObj );
+    createMonster("cube", MONSTER_BLUE, &cubeObj );
     createMonster("cube", MONSTER_GREEN, &cubeObj );
-    createMonster("cube", MONSTER_GREEN, &cubeObj );
-    createMonster("cube", MONSTER_GREEN, &cubeObj );
+    createMonster("cube", MONSTER_RED, &cubeObj );
 
     ObjModel sphereObj("../../data/sphere.obj");
     ComputeNormals(&sphereObj);
@@ -568,7 +568,7 @@ OBS: COMENTEI PARA TESTES!!!
 
 		/*
         // Desenhamos a mira(x)
-        model = Matrix_Translate(-1.0f, -1.0f,0.0f);           
+        model = Matrix_Translate(-1.0f, -1.0f,0.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, X);
         DrawVirtualObject("x");
@@ -700,7 +700,7 @@ void LoadShadersFromFiles()
     glUniform1i(glGetUniformLocation(program_id, "TextureImage2"), 2);
 	glUniform1i(glGetUniformLocation(program_id, "TextureImage3"), 2);
 	glUniform1i(glGetUniformLocation(program_id, "TextureImage4"), 2);
-    glUseProgram(0);	
+    glUseProgram(0);
 }
 
 // Função que pega a matriz M e guarda a mesma no topo da pilha
@@ -828,7 +828,7 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel* model)
                 model_coefficients.push_back( vy ); // Y
                 model_coefficients.push_back( vz ); // Z
                 model_coefficients.push_back( 1.0f ); // W
-				
+
                 bbox_min.x = std::min(bbox_min.x, vx);
                 bbox_min.y = std::min(bbox_min.y, vy);
                 bbox_min.z = std::min(bbox_min.z, vz);
