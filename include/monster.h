@@ -17,7 +17,7 @@ struct Monster{
 	struct ObjModel *Obj;
 	bool enable = false;
 	float velocidade;
-	int life = 5;
+	int life = LIFE_MONSTER;
     public:
         Monster(){
             enable = false;
@@ -57,7 +57,7 @@ void UpdateAllMonsters(float interval){
 /*função para criar um novo objeto*/
 void createMonster(char *name, int typeIlumination, ObjModel *Obj,int i){
         if (listMonster[i].enable == false ){
-                printf("Criando\n");
+                //printf("Criando\n");
 			struct Monster newMonster;
 			newMonster.create(name, typeIlumination,Obj,randomNumber() );
             listMonster[i] = newMonster;
@@ -90,5 +90,6 @@ void RespawnMonsters()
         if(listMonster[i].name == "NULL"){
                 listMonster[i].enable = false;
             createMonster("cube", 1, listMonster[i].Obj,i);
+            return;
         }
 }

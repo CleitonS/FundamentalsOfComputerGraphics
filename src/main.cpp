@@ -302,8 +302,10 @@ int main(int argc, char* argv[])
     ObjModel cubeObj("../../data/cube.obj");
     ComputeNormals(&cubeObj);
     BuildTrianglesAndAddToVirtualScene(&cubeObj);
+    struct Monster monstro_NULL;
+    monstro_NULL.create("NULL",0,&cubeObj,20.0f);
     for(int i = 0;i<MAX_MONSTER;i++)
-        createMonster("cube", 1, &cubeObj,i);
+        listMonster[i] = monstro_NULL;
 
     ObjModel sphereObj("../../data/sphere.obj");
     ComputeNormals(&sphereObj);
@@ -553,25 +555,30 @@ int main(int argc, char* argv[])
         UpdateAllBullets(deltaTempo);
         UpdateAllMonsters(deltaTempo);
 
-        //testa se acertou algum monstro
+        //testa se acertou algum monstro ou um monstro acertou o muro
         for(int i = 0; i< MAX_MONSTER;i++)
+        {
             if(intersecao_bullets(listMonster[i].model))
                 Destroi_monstro(i);
 
+            if (intersecao_AABB_AABB(listMonster[i].model,modelos_do_universo[1]))
+            {
+                printf("GAME OVER\n");
+                for(int j=0;j<LIFE_MONSTER;j++)
+                    Destroi_monstro(i);
+            }
+        }
 
+        //testa se acertou algum objeto
         for(int i = 0 ; i<MAX_OBJETOS;i++)
             intersecao_bullets(modelos_do_universo[i]);
 
+
+
         tempPrev = tempNow;
 
-         // objeto para testes
-        model = Matrix_Translate(3.0f, 0.0f,0.0f);
 
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, SPHERE);
-        DrawVirtualObject("cube");
 
-        modelos_do_universo[0]=model;
 
 
 
@@ -587,6 +594,17 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
+        modelos_do_universo[0]=model;
+
+
+        //MURO
+        model = Matrix_Translate(0.0f, 0.0f,5.0f)
+                * Matrix_Scale(6.0f,1.0f,1.0f);
+
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, SPHERE);
+        DrawVirtualObject("cube");
+
         modelos_do_universo[1]=model;
 
 

@@ -16,5 +16,6 @@
 #define ALTURA_PULO 5.0f
 #define GRAVIDADE 2.0f
 #define VELO_PULO 4.0f //deve ser maior que gravidade
+#define LIFE_MONSTER 5
 
 
