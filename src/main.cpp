@@ -299,7 +299,7 @@ int main(int argc, char* argv[])
     //LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");		  // TextureImage1
 	
 	LoadTextureImage("../../data/grassTexture.jpg");      		// TextureImage0
-    LoadTextureImage("../../data/earth_daymap_surface.jpg");	// TextureImage1	
+    LoadTextureImage("../../data/brackTexture.jpg");	// TextureImage1	
 	LoadTextureImage("../../data/face1.png");	                // TextureImage2
 	LoadTextureImage("../../data/face2.png");	                // TextureImage3
 	LoadTextureImage("../../data/face3.png");	                // TextureImage4
