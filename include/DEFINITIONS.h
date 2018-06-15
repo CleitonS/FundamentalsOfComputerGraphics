@@ -7,6 +7,7 @@
 #define BASIC   3
 #define BACK    4
 #define GROUND  5
+#define X  		9
 
 #define MONSTER_GREEN 6
 #define MONSTER_BLUE  7

@@ -42,7 +42,8 @@
 
 // Headers da biblioteca para carregar modelos obj
 #include <tiny_obj_loader.h>
-#include <stb_image.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 // Headers locais, definidos na pasta "include/"
 #include "utils.h"
 #include "matrices.h"
@@ -297,8 +298,11 @@ int main(int argc, char* argv[])
     //LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
     //LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");		  // TextureImage1
 	
-	LoadTextureImage("../../data/grassTexture.jpg");      // TextureImage0
-    LoadTextureImage("../../data/earth_daymap_surface.jpg");		  // TextureImage1	
+	LoadTextureImage("../../data/grassTexture.jpg");      		// TextureImage0
+    LoadTextureImage("../../data/earth_daymap_surface.jpg");	// TextureImage1	
+	LoadTextureImage("../../data/face1.png");	                // TextureImage2
+	LoadTextureImage("../../data/face2.png");	                // TextureImage3
+	LoadTextureImage("../../data/face3.png");	                // TextureImage4
 
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
     // para renderização. Veja slide 217 e 219 do documento no Moodle
@@ -560,9 +564,16 @@ OBS: COMENTEI PARA TESTES!!!
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, BACK);
         DrawVirtualObject("plane");
-        modelos_do_universo[1]=model;
+        modelos_do_universo[2]=model;
 
-
+		/*
+        // Desenhamos a mira(x)
+        model = Matrix_Translate(-1.0f, -1.0f,0.0f);           
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, X);
+        DrawVirtualObject("x");
+        modelos_do_universo[3]=model;
+*/
 
 
 
