@@ -1582,7 +1582,6 @@ void PrintObjModelInfo(ObjModel* model)
 
 
 // Função que carrega uma imagem para ser utilizada como textura
-void LoadTextureImage(const char* filename)
 {
     printf("Carregando imagem \"%s\"... ", filename);
 
