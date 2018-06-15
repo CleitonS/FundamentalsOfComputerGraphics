@@ -22,8 +22,8 @@ in vec2 texcoords;
 uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
-//uniform sampler2D TextureImage3;
-//uniform sampler2D TextureImage4;
+uniform sampler2D TextureImage3;
+uniform sampler2D TextureImage4;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
 uniform vec4 bbox_min;
@@ -121,32 +121,32 @@ void main()
         if(object_id == MONSTER_GREEN){
 			Kd = vec3 (0.08, 0.4, 0.8);
 			Ks = vec3(0, 0, 0); //Objeto sem termo especular			
-		/*
+		
 			U = texcoords.x;
 			V = texcoords.y;
 			texturaOBJ = texture(TextureImage2, vec2(U,V)).rgb;
-		*/
+		
 		}
 		
         if(object_id == MONSTER_BLUE){
 			Kd = vec3 (0.08, 0.4, 0.8);
 			Ks = vec3(0.3, 0.3, 0.3);
 			q = 16.0;
-		/*	U = texcoords.x;
+			U = texcoords.x;
 			V = texcoords.y;
 			texturaOBJ = texture(TextureImage3, vec2(U,V)).rgb;			
-		*/
+		
 		}		
 		
         if(object_id == MONSTER_RED){
 			Kd = vec3 (0.08, 0.4, 0.8);
 			Ks = vec3(0.8, 0.8, 0.8);
 			q = 32.0;
-		/*
+		
 			U = texcoords.x;
 			V = texcoords.y;
 			texturaOBJ = texture(TextureImage4, vec2(U,V)).rgb;
-		*/
+		
 		}	
 
 		
