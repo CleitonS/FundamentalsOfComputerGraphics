@@ -560,7 +560,7 @@ OBS: COMENTEI PARA TESTES!!!
         // Desenhamos o modelo do Fundo
         model = Matrix_Translate(0.0f, -8.0f,0.0f)
                 * Matrix_Scale(6.0f, 0.0f, 6.0f)
-				* Matrix_Rotation(90) ;
+				* Matrix_Rotate_X(90);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, BACK);
         DrawVirtualObject("plane");
