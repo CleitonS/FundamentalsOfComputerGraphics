@@ -122,8 +122,17 @@ void main()
 			Kd = vec3 (0.08, 0.4, 0.8);
 			Ks = vec3(0, 0, 0); //Objeto sem termo especular			
 		
-			U = texcoords.x;
-			V = texcoords.y;
+			float minx = bbox_min.x;
+			float maxx = bbox_max.x;
+
+			float miny = bbox_min.y;
+			float maxy = bbox_max.y;
+
+			float minz = bbox_min.z;
+			float maxz = bbox_max.z;
+
+			U = (position_model.x - minx) / (maxx - minx);
+			V = (position_model.y - minx) / (maxy - miny);
 			texturaOBJ = texture(TextureImage2, vec2(U,V)).rgb;
 		
 		}
