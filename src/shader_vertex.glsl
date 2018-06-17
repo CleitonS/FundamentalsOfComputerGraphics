@@ -10,6 +10,7 @@ uniform int object_id;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+out vec3 cor_interpolada_pelo_rasterizador;
 
 // Atributos de vértice que serão gerados como saída ("out") pelo Vertex Shader.
 // ** Estes serão interpolados pelo rasterizador! ** gerando, assim, valores
@@ -56,5 +57,20 @@ void main()
     normal.w = 0.0;
     // Coordenadas de textura obtidas do arquivo OBJ (se existirem!)
     texcoords = texture_coefficients;
+
+    vec3 Kd; // Refletância difusa
+    vec3 Ka; // Refletância ambiente
+	vec3 I;
+	vec3 Ia;
+	vec3 lambert_diffuse_term;
+	vec3 ambient_term;
+    Ka = vec3(0.1,0.1,0.1);
+    I = vec3(1.0,1.0,1.0);    						      // Espectro da fonte de iluminação
+    Ia = vec3(1.0,1.0,1.0);   						      // Espectro da luz ambiente
+    Kd = vec3 (0.1, 0.1, 1.0);
+    lambert_diffuse_term = Kd*I*(max(0,dot(normal,l)));       // Termo difuso utilizando a lei dos cossenos de Lambert
+    ambient_term = Ka*Ia;     						      // Termo ambiente
+    cor_interpolada_pelo_rasterizador = lambert_diffuse_term + ambient_term;
+
 
 }

@@ -9,6 +9,7 @@
 in vec4 position_world;
 in vec4 normal;
 in vec4 position_model;
+in vec3 cor_interpolada_pelo_rasterizador;
 
 // Matrizes computadas no código C++ e enviadas para a GPU
 uniform mat4 model;
@@ -180,14 +181,15 @@ void main()
 		}
 
         if(object_id == MONSTER_BLUE){
+                /*
 			Kd = vec3 (0.1, 0.1, 1.0);
             lambert_diffuse_term = Kd*I*(max(0,dot(n,l)));       // Termo difuso utilizando a lei dos cossenos de Lambert
             ambient_term = Ka*Ia;     						      // Termo ambiente
             color = lambert_diffuse_term + ambient_term;
-
+*/
             // Correção gamma, considerando monitor sRGB.
-            color = pow(color, vec3(1.0,1.0,1.0)/2.2);
-
+            //color = pow(color, vec3(1.0,1.0,1.0)/2.2);
+            color = cor_interpolada_pelo_rasterizador;
 		}
 
         if(object_id == MONSTER_RED){
