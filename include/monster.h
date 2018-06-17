@@ -6,8 +6,8 @@ extern GLint model_uniform;
 extern struct Monster listMonster[MAX_MONSTER];
 extern void DrawVirtualObject(char* object_name);
 extern GLint object_id_uniform;
-float randomNumber();
-
+float randomPosition();
+int randomIlumination();
 
 
 struct Monster{
@@ -32,7 +32,13 @@ struct Monster{
 			velocidade = 3.0f;
             Obj = Object;
             name = nameDesc;
-            typeIlumination = typeIluminationIn;
+            int numRrand = randomIlumination();
+            if (numRrand == 0)
+                typeIlumination = MONSTER_BLUE;
+            else if (numRrand == 1)
+                typeIlumination = MONSTER_GREEN;
+            else
+                typeIlumination = MONSTER_RED;
             enable = true;
         }
 		UpdatePosition(float interval){
@@ -59,15 +65,19 @@ void createMonster(char *name, int typeIlumination, ObjModel *Obj,int i){
         if (listMonster[i].enable == false ){
                 //printf("Criando\n");
 			struct Monster newMonster;
-			newMonster.create(name, typeIlumination,Obj,randomNumber() );
+			newMonster.create(name, typeIlumination,Obj,randomPosition() );
             listMonster[i] = newMonster;
             return;
     }
     printf("ERRO na criação de objeto tipo 'Monster'\n");
 }
 
-float randomNumber(){
+float randomPosition(){
     return ((rand())%4 - 2) + 0.1*((rand())%9) + 0.01*((rand())%9);
+}
+
+int randomIlumination(){
+    return ((rand())%3); //número entre 0 e 2
 }
 
 

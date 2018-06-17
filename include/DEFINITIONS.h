@@ -1,11 +1,24 @@
 
 /*Tipos de iluminação*/
-#define SPHERE 0
-#define BUNNY  1
-#define PLANE  2
-#define CUBE   3
-#define BASIC  3
-#define BACK   4
+#define SPHERE  0
+#define BUNNY   1
+#define PLANE   2
+#define CUBE    3
+#define BASIC   3
+#define BACK    4
+#define GROUND  5
+#define X  		9
+#define WALL    11
+#define CASTLE  12
+#define FALLWALL 13
+
+
+
+
+#define MONSTER_GREEN 6
+#define MONSTER_BLUE  7
+#define MONSTER_RED	  8
+
 #define PHI    3.1415926535
 /**/
 

@@ -970,7 +970,7 @@
 	<inttypes.h>
 	<stdint.h>
 
-1527041574 source:c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\src\textrendering.cpp
+1529201881 source:c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\src\textrendering.cpp
 	<string>
 	<glad/glad.h>
 	<GLFW/glfw3.h>
@@ -1364,7 +1364,7 @@
 	<fstream>
 	<sstream>
 
-1527536895 source:c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\src\main.cpp
+1529223004 source:c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\src\main.cpp
 	<cmath>
 	<cstdio>
 	<cstdlib>
@@ -1383,10 +1383,13 @@
 	<glm/vec4.hpp>
 	<glm/gtc/type_ptr.hpp>
 	<tiny_obj_loader.h>
+	"stb_image.h"
 	"utils.h"
 	"matrices.h"
 	"DEFINITIONS.h"
 	"monster.h"
+	"Bullets.h"
+	"intersecao.h"
 
 1527041573 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\glm\gtc\type_ptr.hpp
 	"../gtc/quaternion.hpp"
@@ -1474,9 +1477,9 @@
 1527041574 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\glm\matrix.hpp
 	"detail/func_matrix.hpp"
 
-1527047997 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\definitions.h
+1529222156 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\definitions.h
 
-1527536965 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\monster.h
+1529204173 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\monster.h
 	<ctime>
 	<cstdlib>
 
@@ -2027,4 +2030,27 @@
 	"intersecao.h"
 
 1529024592 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\intersecao.h
+
+1529200547 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\bullets.h
+	<ctime>
+	<cstdlib>
+	"intersecao.h"
+
+1529200547 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\intersecao.h
+
+1528943348 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
 

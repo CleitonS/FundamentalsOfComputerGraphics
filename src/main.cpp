@@ -42,7 +42,8 @@
 
 // Headers da biblioteca para carregar modelos obj
 #include <tiny_obj_loader.h>
-
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 // Headers locais, definidos na pasta "include/"
 #include "utils.h"
 #include "matrices.h"
@@ -99,6 +100,7 @@ GLuint LoadShader_Fragment(const char* filename); // Carrega um fragment shader
 void LoadShader(const char* filename, GLuint shader_id); // Função utilizada pelas duas acima
 GLuint CreateGpuProgram(GLuint vertex_shader_id, GLuint fragment_shader_id); // Cria um programa de GPU
 void PrintObjModelInfo(ObjModel*); // Função para debugging
+void LoadTextureImage(const char* filename); // Função que carrega imagens de textura
 
 // Declaração de funções auxiliares para renderizar texto dentro da janela
 // OpenGL. Estas funções estão definidas no arquivo "textrendering.cpp".
@@ -126,7 +128,8 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-
+float TestA = -3.0;
+bool gameOver = false;
 // Definimos uma estrutura que armazenará dados necessários para renderizar
 // cada objeto da cena virtual.
 struct SceneObject
@@ -136,6 +139,9 @@ struct SceneObject
     int          num_indices; // Número de índices do objeto dentro do vetor indices[] definido em BuildTrianglesAndAddToVirtualScene()
     GLenum       rendering_mode; // Modo de rasterização (GL_TRIANGLES, GL_TRIANGLE_STRIP, etc.)
     GLuint       vertex_array_object_id; // ID do VAO onde estão armazenados os atributos do modelo
+    glm::vec3    bbox_min; // Axis-Aligned Bounding Box do objeto
+    glm::vec3    bbox_max;
+
 };
 
 
@@ -202,7 +208,11 @@ GLint model_uniform;
 GLint view_uniform;
 GLint projection_uniform;
 GLint object_id_uniform;
+GLint bbox_min_uniform;
+GLint bbox_max_uniform;
 
+// Número de texturas carregadas pela função LoadTextureImage()
+GLuint g_NumLoadedTextures = 0;
 
 struct Monster listMonster[MAX_MONSTER];
 void createMonster(char *name, int typeIlumination, ObjModel *Obj,int i);
@@ -218,7 +228,12 @@ glm::vec4 MovimentoPersonagem(glm::vec4 camera_position_c,glm::vec4 camera_view_
 int  Intersecao_Monstros_muro(glm::mat4 muro);
 void intersecao_Bullets_Objetos_Monstros(glm::mat4 modelos_do_universo[MAX_OBJETOS]);
 glm::mat4 DesenhaChao(glm::mat4 model);
+glm::mat4  DesenhaFundoBack(glm::mat4 model);
+glm::mat4  DesenhaFundoLeft(glm::mat4 model);
+glm::mat4  DesenhaFundoRight(glm::mat4 model);
+glm::mat4  DesenhaFundoFront(glm::mat4 model);
 glm::mat4  DesenhaMuro(glm::mat4 model);
+glm::mat4  DesenhaMuroFall(glm::mat4 model);
  void GameOver();
 
 
@@ -294,16 +309,30 @@ int main(int argc, char* argv[])
     const GLubyte *glslversion = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
     printf("GPU: %s, %s, OpenGL %s, GLSL %s\n", vendor, renderer, glversion, glslversion);
-
+	LoadShadersFromFiles();
     /*Inicializa Seed para a utilização de funções randomicas*/
     srand(time(0));
 
+    // Carregamos duas imagens para serem utilizadas como textura
+	//https://br.freepik.com
+	printf("Carregando texturas...\n");
+    //LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
+    //LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");		  // TextureImage1
+
+	LoadTextureImage("../../data/grassTexture.jpg");      		// TextureImage0
+    LoadTextureImage("../../data/backTexture.jpg");	            // TextureImage1
+	LoadTextureImage("../../data/face1.jpg");	                // TextureImage2
+	LoadTextureImage("../../data/face2.jpg");	                // TextureImage3
+	LoadTextureImage("../../data/face3.jpg");	                // TextureImage4
+	LoadTextureImage("../../data/Wall.jpg");	                // TextureImage5
+	LoadTextureImage("../../data/castle.jpg");	                // TextureImage6
+	LoadTextureImage("../../data/FallWall.jpg");                // TextureImage7
 
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
     // para renderização. Veja slide 217 e 219 do documento no Moodle
     // "Aula_03_Rendering_Pipeline_Grafico.pdf".
     //
-    LoadShadersFromFiles();
+
     ObjModel planeObj("../../data/plane.obj");
     ComputeNormals(&planeObj);
     BuildTrianglesAndAddToVirtualScene(&planeObj);
@@ -322,6 +351,11 @@ int main(int argc, char* argv[])
     ObjModel sphereObj("../../data/sphere.obj");
     ComputeNormals(&sphereObj);
     BuildTrianglesAndAddToVirtualScene(&sphereObj);
+
+    ObjModel cowObj("../../data/cow.obj");
+    ComputeNormals(&cowObj);
+    BuildTrianglesAndAddToVirtualScene(&cowObj);
+
 
     bool aux_bullet =true;//auxiliar para atirar apenas uma bullet por clique
     int k_bullet = 0;//indicador do vetor das bullets
@@ -388,8 +422,12 @@ int main(int argc, char* argv[])
    //define se o pulo ta permintindo, vai ser false quando caindo
    bool nao_caindo = false;
 
-
-
+   // Note que, no sistema de coordenadas da câmera, os planos near e far
+   // estão no sentido negativo! Veja slides 191-194 do documento
+   // "Aula_09_Projecoes.pdf".
+   float nearplane = -0.1f;  // Posição do "near plane"
+   float farplane  = -15.0f; // Posição do "far plane"
+   glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
 
 
 
@@ -404,8 +442,8 @@ int main(int argc, char* argv[])
         // Conversaremos sobre sistemas de cores nas aulas de Modelos de Iluminação.
         //
         //           R     G     B     A
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
+        glClearColor(0.2f, 0.5f, 1.0f, 1.0f);
+        //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         // "Pintamos" todos os pixels do framebuffer com a cor definida acima,
         // e também resetamos todos os pixels do Z-buffer (depth buffer).
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -427,196 +465,179 @@ int main(int argc, char* argv[])
         float tempNow = glfwGetTime();
         float deltaTempo = tempNow - tempPrev;
 
-        //A cada 1 segundo, revive monstros mortos
-        deltaTempoRespawn = monsterRespawnNew - monsterRespawnOld;
-        if(deltaTempoRespawn >= 1.0f)
-        {
-            monsterRespawnOld = glfwGetTime();
-            RespawnMonsters();
-
-        }
-         monsterRespawnNew = glfwGetTime();
-
-
-
-        // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
-        // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
-
-
-        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); //aponta para o "céu" (eito Y global)
-        glm::vec4 camera_vec_ortogonal   = crossproduct(camera_view_vector,camera_up_vector); //vetor para o moviemnto para os lados
-        camera_position_c_copia = camera_position_c;//para o caso de houver intersecao com um objeto
-        camera_position_c  =  MovimentoPersonagem(camera_position_c,camera_view_vector,
-                                                  camera_vec_ortogonal,deltaTempo,move_frente,move_lado,gravidade);// Ponto "c", centro da câmera
-
-
-        nao_caindo=(no_chao||pulando);//se nao estiver caindo
-
-        if(!nao_caindo)//se estiver caindo, não pode pular ou continuar pulando
-            pular=false;
-
-
-        if(pular)
-        {
-            camera_position_c = camera_position_c + glm::vec4(0.0f,VELO_PULO*deltaTempo,0.0f,0.0f);
-            altura_pulo_restante -= (VELO_PULO*deltaTempo);
-            pulando = true;
-            no_chao = false;
-
-            if(altura_pulo_restante <= 0)
-            {
-                altura_pulo_restante = ALTURA_PULO;
-                pulando=false;
-
-            }
-        }
-
-        //se houver um objeto abaixo, nao cai
-         for(int i = 0;i<MAX_OBJETOS;i++)
-        {
-
-            if(intersecao_AABB_PONTO(modelos_do_universo[i],glm::vec4(camera_position_c_copia.x,
-                                                                      camera_position_c.y - 0.5f, //altura player
-                                                                      camera_position_c_copia.z,  1.0f)))
-            {
-                            camera_position_c= glm::vec4(camera_position_c.x,
-                                                         camera_position_c_copia.y,
-                                                         camera_position_c.z,1.0f) ;
-                            gravidade_aux=true;
-                            no_chao = true;
-            }
-        }
-            if(gravidade_aux)
-                gravidade = 0.0f;
-            else
-                gravidade=GRAVIDADE;
-
-
-        gravidade_aux=false;
-
-
-        //se houver intersecao com um objeto ao lado, nao entra dentro dele
-        for(int i = 0;i<MAX_OBJETOS;i++)
-            if(intersecao_AABB_PONTO(modelos_do_universo[i],camera_position_c - glm::vec4(0.0f,0.5f,0.0f,0.0f)))
-                camera_position_c =  glm::vec4(camera_position_c_copia.x,
-                                              camera_position_c.y ,
-                                              camera_position_c_copia.z,   1.0f);
-
-
-
-
-         camera_view_vector = glm::vec4(x  + camera_view_vector.x*deltaTempo*move_frente + camera_vec_ortogonal.x*deltaTempo*move_lado,
-                                       -y ,
-                                       z  + camera_view_vector.z*deltaTempo*move_frente + camera_vec_ortogonal.z*deltaTempo*move_lado ,
-                                       0.0f); // Vetor "view", sentido para onde a câmera está virada
-
-
-
-
-        // Computamos a matriz "View" utilizando os parâmetros da câmera para
-        // definir o sistema de coordenadas da câmera.  Veja slide 179 do
-        // documento "Aula_08_Sistemas_de_Coordenadas.pdf".
-        glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
-
-        // Agora computamos a matriz de Projeção.
-        glm::mat4 projection;
-
-        // Note que, no sistema de coordenadas da câmera, os planos near e far
-        // estão no sentido negativo! Veja slides 191-194 do documento
-        // "Aula_09_Projecoes.pdf".
-        float nearplane = -0.1f;  // Posição do "near plane"
-        float farplane  = -10.0f; // Posição do "far plane"
-
-		// Projeção Perspectiva.
-		// Para definição do field of view (FOV), veja slide 228 do
-		// documento "Aula_09_Projecoes.pdf".
-		float field_of_view = 3.141592 / 3.0f;
-		projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
-
-        glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
-
-        // Enviamos as matrizes "view" e "projection" para a placa de vídeo
-        // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
-        // efetivamente aplicadas em todos os pontos.
-        glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
-        glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
-
-        //quando pressionar, executa uma vez só.
-        if(g_LeftMouseButtonPressed && aux_bullet)
-        {
-
-            createBullet("cube",camera_view_vector, camera_position_c,&cubeObj,k_bullet);
-
-            if(k_bullet<MAX_BULLETS-1)//vai percorrendo o vetor, e reinicia ao chegar no final
-                k_bullet++;
-            else
-                k_bullet=0;
-
-        }
-
-
-
-        aux_bullet = !g_LeftMouseButtonPressed;
-
-
-
-
-        UpdateAllBullets(deltaTempo);
-        UpdateAllMonsters(deltaTempo);
-
-
-        vidaMuro -= Intersecao_Monstros_muro(modelos_do_universo[1]);
-
-        if(vidaMuro <= 0)
-            {
-                GameOver();
-                vidaMuro = VIDA_MURO; //tirar na versao final
-            }
-
-        intersecao_Bullets_Objetos_Monstros(modelos_do_universo);
-
-
-
-        tempPrev = tempNow;
-
-
-
-
-
-
-
-
-
         modelos_do_universo[0] = DesenhaChao(model);
-        modelos_do_universo[1] = DesenhaMuro(model);
+        //modelos_do_universo[1] = DesenhaMuro(model);
+        modelos_do_universo[2] = DesenhaFundoBack(model);
+        modelos_do_universo[3] = DesenhaFundoLeft(model);
+        modelos_do_universo[4] = DesenhaFundoRight(model);
+        modelos_do_universo[4] = DesenhaFundoFront(model);
+
+
+
+        if(!gameOver){
+            modelos_do_universo[1] = DesenhaMuro(model);
+
+            // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
+            // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
+            glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); //aponta para o "céu" (eito Y global)
+            glm::vec4 camera_vec_ortogonal   = crossproduct(camera_view_vector,camera_up_vector); //vetor para o moviemnto para os lados
+            camera_position_c_copia = camera_position_c;//para o caso de houver intersecao com um objeto
+            camera_position_c  =  MovimentoPersonagem(camera_position_c,camera_view_vector,
+                                                      camera_vec_ortogonal,deltaTempo,move_frente,move_lado,gravidade);// Ponto "c", centro da câmera
+
+
+            //A cada 1 segundo, revive monstros mortos
+            deltaTempoRespawn = monsterRespawnNew - monsterRespawnOld;
+            if(deltaTempoRespawn >= 1.0f)
+            {
+                monsterRespawnOld = glfwGetTime();
+                RespawnMonsters();
+
+            }
+             monsterRespawnNew = glfwGetTime();
+
+
+            nao_caindo=(no_chao||pulando);//se nao estiver caindo
+
+            if(!nao_caindo)//se estiver caindo, não pode pular ou continuar pulando
+                pular=false;
+
+
+            if(pular)
+            {
+                camera_position_c = camera_position_c + glm::vec4(0.0f,VELO_PULO*deltaTempo,0.0f,0.0f);
+                altura_pulo_restante -= (VELO_PULO*deltaTempo);
+                pulando = true;
+                no_chao = false;
+
+                if(altura_pulo_restante <= 0)
+                {
+                    altura_pulo_restante = ALTURA_PULO;
+                    pulando=false;
+
+                }
+            }
+
+            //se houver um objeto abaixo, nao cai
+             for(int i = 0;i<MAX_OBJETOS;i++)
+            {
+                if(intersecao_AABB_PONTO(modelos_do_universo[i],glm::vec4(camera_position_c_copia.x,
+                                                                          camera_position_c.y - 0.5f, //altura player
+                                                                          camera_position_c_copia.z,  1.0f)))
+                {
+                                camera_position_c= glm::vec4(camera_position_c.x,
+                                                             camera_position_c_copia.y,
+                                                             camera_position_c.z,1.0f) ;
+                                gravidade_aux=true;
+                                no_chao = true;
+                }
+            }
+                if(gravidade_aux)
+                    gravidade = 0.0f;
+                else
+                    gravidade=GRAVIDADE;
+
+
+            gravidade_aux=false;
+
+
+            //se houver intersecao com um objeto ao lado, nao entra dentro dele
+            for(int i = 0;i<MAX_OBJETOS;i++)
+                if(intersecao_AABB_PONTO(modelos_do_universo[i],camera_position_c - glm::vec4(0.0f,0.5f,0.0f,0.0f)))
+                    camera_position_c =  glm::vec4(camera_position_c_copia.x,
+                                                  camera_position_c.y ,
+                                                  camera_position_c_copia.z,   1.0f);
+
+
+
+
+             camera_view_vector = glm::vec4(x  + camera_view_vector.x*deltaTempo*move_frente + camera_vec_ortogonal.x*deltaTempo*move_lado,
+                                           -y ,
+                                           z  + camera_view_vector.z*deltaTempo*move_frente + camera_vec_ortogonal.z*deltaTempo*move_lado ,
+                                           0.0f); // Vetor "view", sentido para onde a câmera está virada
+
+
+
+
+            // Computamos a matriz "View" utilizando os parâmetros da câmera para
+            // definir o sistema de coordenadas da câmera.  Veja slide 179 do
+            // documento "Aula_08_Sistemas_de_Coordenadas.pdf".
+            glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
+
+            // Agora computamos a matriz de Projeção.
+            glm::mat4 projection;
+
+
+            // Projeção Perspectiva.
+            // Para definição do field of view (FOV), veja slide 228 do
+            // documento "Aula_09_Projecoes.pdf".
+            float field_of_view = 3.141592 / 3.0f;
+            projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
+
+            // Enviamos as matrizes "view" e "projection" para a placa de vídeo
+            // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
+            // efetivamente aplicadas em todos os pontos.
+            glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
+            glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
+
+            //quando pressionar, executa uma vez só.
+            if(g_LeftMouseButtonPressed && aux_bullet)
+            {
+
+                createBullet("cube",camera_view_vector, camera_position_c,&cubeObj,k_bullet);
+
+                if(k_bullet<MAX_BULLETS-1)//vai percorrendo o vetor, e reinicia ao chegar no final
+                    k_bullet++;
+                else
+                    k_bullet=0;
+
+            }
+            aux_bullet = !g_LeftMouseButtonPressed;
+
+            UpdateAllBullets(deltaTempo);
+            UpdateAllMonsters(deltaTempo);
+
+            vidaMuro -= Intersecao_Monstros_muro(modelos_do_universo[1]);
+
+            if(vidaMuro <= 0)
+                {
+                    GameOver();
+                    vidaMuro = VIDA_MURO; //tirar na versao final
+                }
+
+            intersecao_Bullets_Objetos_Monstros(modelos_do_universo);
+
+            tempPrev = tempNow;
+
+
+        }
+        else{ //gameOver
+            modelos_do_universo[1] = DesenhaMuroFall(model);
+
+                /*Implementação da câmera lookAt... */
+            glm::vec4 camera_position_c  = glm::vec4(1.0,2.0,2.0,1.0f); // Ponto "c", centro da câmera
+            glm::vec4 camera_lookat_l    = glm::vec4(TestA,1.0f,1.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+            glm::vec4 camera_view_vector = glm::vec4(0.0f,0.0f,-1.0f,0.0f);
+            //glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+            glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+            glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
+            glm::mat4 projection;
+            glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
+            glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
+
+            /*Desenhando cow*/
+            model = Matrix_Translate(2.0f, 0.0,6.5f)
+                    * Matrix_Scale(1.0f,1.0f,1.0f);
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, MONSTER_RED);
+            DrawVirtualObject("cow");
 
 
 
 
 
 
-
-
-
-
-
-        // Pegamos um vértice com coordenadas de modelo (0.5, 0.5, 0.5, 1) e o
-        // passamos por todos os sistemas de coordenadas armazenados nas
-        // matrizes the_model, the_view, e the_projection; e escrevemos na tela
-        // as matrizes e pontos resultantes dessas transformações.
-        //glm::vec4 p_model(0.5f, 0.5f, 0.5f, 1.0f);
-        //TextRendering_ShowModelViewProjection(window, projection, view, model, p_model);
-
-        // Imprimimos na tela os ângulos de Euler que controlam a rotação do
-        // terceiro cubo.
-        //TextRendering_ShowEulerAngles(window);
-
-        // Imprimimos na informação sobre a matriz de projeção sendo utilizada.
-       // TextRendering_ShowProjection(window);
-
-        // Imprimimos na tela informação sobre o número de quadros renderizados
-        // por segundo (frames per second).
-        //TextRendering_ShowFramesPerSecond(window);
+        }
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário
@@ -631,6 +652,7 @@ int main(int argc, char* argv[])
         // definidas anteriormente usando glfwSet*Callback() serão chamadas
         // pela biblioteca GLFW.
         glfwPollEvents();
+
     }
 
     // Finalizamos o uso dos recursos do sistema operacional
@@ -649,6 +671,10 @@ void DrawVirtualObject(char* object_name)
     // comentários detalhados dentro da definição de BuildTrianglesAndAddToVirtualScene().
     glBindVertexArray(g_VirtualScene[object_name].vertex_array_object_id);
 
+    glm::vec3 bbox_min = g_VirtualScene[object_name].bbox_min;
+    glm::vec3 bbox_max = g_VirtualScene[object_name].bbox_max;
+    glUniform4f(bbox_min_uniform, bbox_min.x, bbox_min.y, bbox_min.z, 1.0f);
+    glUniform4f(bbox_max_uniform, bbox_max.x, bbox_max.y, bbox_max.z, 1.0f);
     // Pedimos para a GPU rasterizar os vértices dos eixos XYZ
     // apontados pelo VAO como linhas. Veja a definição de
     // g_VirtualScene[""] dentro da função BuildTrianglesAndAddToVirtualScene(), e veja
@@ -707,6 +733,20 @@ void LoadShadersFromFiles()
     view_uniform            = glGetUniformLocation(program_id, "view"); // Variável da matriz "view" em shader_vertex.glsl
     projection_uniform      = glGetUniformLocation(program_id, "projection"); // Variável da matriz "projection" em shader_vertex.glsl
     object_id_uniform       = glGetUniformLocation(program_id, "object_id"); // Variável "object_id" em shader_fragment.glsl
+    bbox_min_uniform        = glGetUniformLocation(program_id, "bbox_min");
+    bbox_max_uniform        = glGetUniformLocation(program_id, "bbox_max");
+
+    // Variáveis em "shader_fragment.glsl" para acesso das imagens de textura
+    glUseProgram(program_id);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage0"), 0);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage1"), 1);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage2"), 2);
+	glUniform1i(glGetUniformLocation(program_id, "TextureImage3"), 3);
+	glUniform1i(glGetUniformLocation(program_id, "TextureImage4"), 4);
+	glUniform1i(glGetUniformLocation(program_id, "TextureImage5"), 5);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage6"), 6);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage7"), 7);
+    glUseProgram(0);
 }
 
 // Função que pega a matriz M e guarda a mesma no topo da pilha
@@ -811,6 +851,11 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel* model)
         size_t first_index = indices.size();
         size_t num_triangles = model->shapes[shape].mesh.num_face_vertices.size();
 
+        const float minval = std::numeric_limits<float>::min();
+        const float maxval = std::numeric_limits<float>::max();
+
+        glm::vec3 bbox_min = glm::vec3(maxval,maxval,maxval);
+        glm::vec3 bbox_max = glm::vec3(minval,minval,minval);
         for (size_t triangle = 0; triangle < num_triangles; ++triangle)
         {
             assert(model->shapes[shape].mesh.num_face_vertices[triangle] == 3);
@@ -829,6 +874,13 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel* model)
                 model_coefficients.push_back( vy ); // Y
                 model_coefficients.push_back( vz ); // Z
                 model_coefficients.push_back( 1.0f ); // W
+
+                bbox_min.x = std::min(bbox_min.x, vx);
+                bbox_min.y = std::min(bbox_min.y, vy);
+                bbox_min.z = std::min(bbox_min.z, vz);
+                bbox_max.x = std::max(bbox_max.x, vx);
+                bbox_max.y = std::max(bbox_max.y, vy);
+                bbox_max.z = std::max(bbox_max.z, vz);
 
                 // Inspecionando o código da tinyobjloader, o aluno Bernardo
                 // Sulzbach (2017/1) apontou que a maneira correta de testar se
@@ -865,6 +917,8 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel* model)
         theobject.rendering_mode = GL_TRIANGLES;       // Índices correspondem ao tipo de rasterização GL_TRIANGLES.
         theobject.vertex_array_object_id = vertex_array_object_id;
 
+        theobject.bbox_min = bbox_min;
+        theobject.bbox_max = bbox_max;
         g_VirtualScene[model->shapes[shape].name] = theobject;
     }
 
@@ -1265,7 +1319,11 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     {
         g_AngleZ += (mod & GLFW_MOD_SHIFT) ? -delta : delta;
     }
-
+    if (key == GLFW_KEY_O && action == GLFW_PRESS)
+    {
+        TestA += 2.0;
+        printf("TesteA: %f", TestA);
+    }
 
 
     if (key == GLFW_KEY_W && action == GLFW_PRESS)
@@ -1607,6 +1665,62 @@ void PrintObjModelInfo(ObjModel* model)
   }
 }
 
+
+// Função que carrega uma imagem para ser utilizada como textura
+void LoadTextureImage(const char* filename)
+{
+    printf("Carregando imagem \"%s\"... ", filename);
+
+    // Primeiro fazemos a leitura da imagem do disco
+    stbi_set_flip_vertically_on_load(true);
+    int width;
+    int height;
+    int channels;
+    unsigned char *data = stbi_load(filename, &width, &height, &channels, 3);
+
+    if ( data == NULL )
+    {
+        fprintf(stderr, "ERROR: Cannot open image file \"%s\".\n", filename);
+        std::exit(EXIT_FAILURE);
+    }
+
+    printf("OK (%dx%d).\n", width, height);
+
+    // Agora criamos objetos na GPU com OpenGL para armazenar a textura
+    GLuint texture_id;
+    GLuint sampler_id;
+    glGenTextures(1, &texture_id);
+    glGenSamplers(1, &sampler_id);
+
+    // Veja slide 160 do documento "Aula_20_e_21_Mapeamento_de_Texturas.pdf"
+    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // Parâmetros de amostragem da textura. Falaremos sobre eles em uma próxima aula.
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Agora enviamos a imagem lida do disco para a GPU
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+
+    GLuint textureunit = g_NumLoadedTextures;
+    glActiveTexture(GL_TEXTURE0 + textureunit);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindSampler(textureunit, sampler_id);
+
+    stbi_image_free(data);
+
+    g_NumLoadedTextures += 1;
+}
+
+
+
+
 glm::vec4 MovimentoPersonagem(glm::vec4 camera_position_c,glm::vec4 camera_view_vector,glm::vec4 camera_vec_ortogonal,
                                                                             float deltaTempo,float move_frente,float move_lado,float gravidade)
 {
@@ -1654,28 +1768,94 @@ glm::mat4 DesenhaChao(glm::mat4 model){
         model = Matrix_Translate(0.0f, -1.0f,0.0f)
                     * Matrix_Scale(6.0f, 0.0f, 6.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, PLANE);
+        glUniform1i(object_id_uniform, GROUND);
         DrawVirtualObject("plane");
 
         return model;
 }
 
 glm::mat4  DesenhaMuro(glm::mat4 model){
-
-
-
-        model = Matrix_Translate(0.0f, 0.0f,5.0f)
-                * Matrix_Scale(6.0f,1.0f,1.0f);
+        model = Matrix_Translate(0.0f, -0.4,5.0f)
+                * Matrix_Scale(10.0f,1.0f,0.2f);
 
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, SPHERE);
+        glUniform1i(object_id_uniform, WALL);
         DrawVirtualObject("cube");
 
         return model;
 }
 
- void GameOver(){
+glm::mat4  DesenhaMuroFall(glm::mat4 model){
+        model = Matrix_Translate(0.0f, -0.4,5.0f)
+                * Matrix_Scale(10.0f,1.0f,0.2f);
 
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, FALLWALL);
+        DrawVirtualObject("cube");
+
+        return model;
+}
+
+glm::mat4 DesenhaFundoBack(glm::mat4 model){
+        model = Matrix_Identity()
+                * Matrix_Translate(0.0,2.0,-4.82f )
+                * Matrix_Rotate_X(1.6)
+                * Matrix_Scale(6.4,1.0,3.5)
+                ;
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, BACK);
+        DrawVirtualObject("plane");
+        return model;
+
+}
+glm::mat4  DesenhaFundoLeft(glm::mat4 model){
+
+        model = Matrix_Identity()
+        * Matrix_Translate(-5.8f,2.0f,2.0f)
+                    * Matrix_Rotate_Y(1.55)
+                    * Matrix_Rotate_X(1.6)
+                    * Matrix_Scale(6.7,1.0,3.5)
+                    ;
+
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, BACK);
+        DrawVirtualObject("plane");
+
+    return model;
+}
+glm::mat4  DesenhaFundoRight(glm::mat4 model){
+        model = Matrix_Identity()
+        * Matrix_Translate(5.7f,2.0f,2.0f)
+                    * Matrix_Rotate_Y(4.7)
+                    * Matrix_Rotate_X(1.6)
+                    * Matrix_Scale(6.7,1.0,3.5)
+                    ;
+
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, BACK);
+        DrawVirtualObject("plane");
+
+    return model;
+}
+glm::mat4  DesenhaFundoFront(glm::mat4 model){
+        model = Matrix_Identity()
+        * Matrix_Translate(0.0f,2.0f,6.18f)
+                    * Matrix_Rotate_X(4.7)
+                    * Matrix_Rotate_Y(3.15f)
+                    * Matrix_Scale(6.0,1.0,3.5)
+                    ;
+
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, CASTLE);
+        DrawVirtualObject("plane");
+
+    return model;
+
+
+}
+
+ void GameOver(){
+    gameOver = true;
     printf("GAME OVER!\n"); //realmente acabar o jogo
 
  }
