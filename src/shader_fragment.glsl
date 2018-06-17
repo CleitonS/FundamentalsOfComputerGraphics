@@ -160,8 +160,21 @@ void main()
 
         // Propriedades espectrais do monstro
         if(object_id == MONSTER_GREEN){
-			U = texcoords.x;
-			V = texcoords.y;
+        //projecao planar...
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        U = (position_model.x - minx) / (maxx - minx);
+        V = (position_model.y - minx) / (maxy - miny);
+
+        //Projecao em todas as faces.
+		//	U = texcoords.x;
+		//	V = texcoords.y;
 			color = texture(TextureImage3, vec2(U,V)).rgb;
 
 		}
