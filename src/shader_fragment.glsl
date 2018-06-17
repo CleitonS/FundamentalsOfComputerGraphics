@@ -27,6 +27,7 @@ uniform sampler2D TextureImage4;
 uniform sampler2D TextureImage5;
 uniform sampler2D TextureImage6;
 uniform sampler2D TextureImage7;
+uniform sampler2D TextureImage8;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
 uniform vec4 bbox_min;
@@ -46,6 +47,8 @@ uniform vec4 bbox_max;
 #define WALL    11
 #define CASTLE  12
 #define FALLWALL 13
+#define CASTLEFALL 14
+
 
 #define MONSTER_GREEN 6
 #define MONSTER_BLUE  7
@@ -137,6 +140,14 @@ void main()
         U = texcoords.x;
         V = texcoords.y;
 		color = texture(TextureImage6, vec2(U,V)).rgb;
+
+    }
+	else if ( object_id == CASTLEFALL )
+    {
+
+        U = texcoords.x;
+        V = texcoords.y;
+		color = texture(TextureImage8, vec2(U,V)).rgb;
 
     }
 	else if ( object_id == MONSTER_GREEN ||

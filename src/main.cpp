@@ -234,6 +234,8 @@ glm::mat4  DesenhaFundoRight(glm::mat4 model);
 glm::mat4  DesenhaFundoFront(glm::mat4 model);
 glm::mat4  DesenhaMuro(glm::mat4 model);
 glm::mat4  DesenhaMuroFall(glm::mat4 model);
+glm::mat4  DesenhaFundoFrontFall(glm::mat4 model);
+
  void GameOver();
 
 
@@ -268,7 +270,7 @@ int main(int argc, char* argv[])
     // Criamos uma janela do sistema operacional, com 800 colunas e 600 linhas
     // de pixels, e com título "INF01047 ...".
     GLFWwindow* window;
-    window = glfwCreateWindow(800, 600, "NOME DO JOGO", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "The Castle Defensor", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -327,6 +329,7 @@ int main(int argc, char* argv[])
 	LoadTextureImage("../../data/Wall.jpg");	                // TextureImage5
 	LoadTextureImage("../../data/castle.jpg");	                // TextureImage6
 	LoadTextureImage("../../data/FallWall.jpg");                // TextureImage7
+	LoadTextureImage("../../data/castleGameOver.jpg");	        // TextureImage8
 
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
     // para renderização. Veja slide 217 e 219 do documento no Moodle
@@ -470,12 +473,13 @@ int main(int argc, char* argv[])
         modelos_do_universo[2] = DesenhaFundoBack(model);
         modelos_do_universo[3] = DesenhaFundoLeft(model);
         modelos_do_universo[4] = DesenhaFundoRight(model);
-        modelos_do_universo[5] = DesenhaFundoFront(model);
+        //modelos_do_universo[5] = DesenhaFundoFront(model);
 
 
 
         if(!gameOver){
             modelos_do_universo[1] = DesenhaMuro(model);
+            modelos_do_universo[5] = DesenhaFundoFront(model);
 
             // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
             // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
@@ -613,7 +617,7 @@ int main(int argc, char* argv[])
         }
         else{ //gameOver
             modelos_do_universo[1] = DesenhaMuroFall(model);
-
+            modelos_do_universo[5] = DesenhaFundoFrontFall(model);
                 /*Implementação da câmera lookAt... */
             glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
             glm::vec4 camera_lookat_l    = glm::vec4(0.0f,1.0f,1.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
@@ -748,6 +752,8 @@ void LoadShadersFromFiles()
 	glUniform1i(glGetUniformLocation(program_id, "TextureImage5"), 5);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage6"), 6);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage7"), 7);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage8"), 8);
+
     glUseProgram(0);
 }
 
@@ -1852,8 +1858,21 @@ glm::mat4  DesenhaFundoFront(glm::mat4 model){
         DrawVirtualObject("plane");
 
     return model;
+}
 
+glm::mat4  DesenhaFundoFrontFall(glm::mat4 model){
+        model = Matrix_Identity()
+        * Matrix_Translate(0.0f,2.0f,6.18f)
+                    * Matrix_Rotate_X(4.7)
+                    * Matrix_Rotate_Y(3.15f)
+                    * Matrix_Scale(6.0,1.0,3.5)
+                    ;
 
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, CASTLEFALL);
+        DrawVirtualObject("plane");
+
+    return model;
 }
 
  void GameOver(){

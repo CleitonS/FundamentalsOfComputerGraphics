@@ -11,7 +11,7 @@
 #define WALL    11
 #define CASTLE  12
 #define FALLWALL 13
-
+#define CASTLEFALL 14
 
 
 
