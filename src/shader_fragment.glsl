@@ -9,6 +9,7 @@
 in vec4 position_world;
 in vec4 normal;
 in vec4 position_model;
+in vec3 cor_interpolada_pelo_rasterizador;
 
 // Matrizes computadas no código C++ e enviadas para a GPU
 uniform mat4 model;
@@ -27,6 +28,7 @@ uniform sampler2D TextureImage4;
 uniform sampler2D TextureImage5;
 uniform sampler2D TextureImage6;
 uniform sampler2D TextureImage7;
+uniform sampler2D TextureImage8;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
 uniform vec4 bbox_min;
@@ -46,6 +48,8 @@ uniform vec4 bbox_max;
 #define WALL    11
 #define CASTLE  12
 #define FALLWALL 13
+#define CASTLEFALL 14
+
 
 #define MONSTER_GREEN 6
 #define MONSTER_BLUE  7
@@ -139,6 +143,14 @@ void main()
 		color = texture(TextureImage6, vec2(U,V)).rgb;
 
     }
+	else if ( object_id == CASTLEFALL )
+    {
+
+        U = texcoords.x;
+        V = texcoords.y;
+		color = texture(TextureImage8, vec2(U,V)).rgb;
+
+    }
 	else if ( object_id == MONSTER_GREEN ||
 			  object_id == MONSTER_BLUE  ||
 			  object_id == MONSTER_RED	)
@@ -149,21 +161,35 @@ void main()
 
         // Propriedades espectrais do monstro
         if(object_id == MONSTER_GREEN){
-			U = texcoords.x;
-			V = texcoords.y;
+        //projecao planar...
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        U = (position_model.x - minx) / (maxx - minx);
+        V = (position_model.y - minx) / (maxy - miny);
+
+        //Projecao em todas as faces.
+		//	U = texcoords.x;
+		//	V = texcoords.y;
 			color = texture(TextureImage3, vec2(U,V)).rgb;
 
 		}
 
         if(object_id == MONSTER_BLUE){
+                /*
 			Kd = vec3 (0.1, 0.1, 1.0);
             lambert_diffuse_term = Kd*I*(max(0,dot(n,l)));       // Termo difuso utilizando a lei dos cossenos de Lambert
             ambient_term = Ka*Ia;     						      // Termo ambiente
             color = lambert_diffuse_term + ambient_term;
-
+*/
             // Correção gamma, considerando monitor sRGB.
-            color = pow(color, vec3(1.0,1.0,1.0)/2.2);
-
+            //color = pow(color, vec3(1.0,1.0,1.0)/2.2);
+            color = cor_interpolada_pelo_rasterizador;
 		}
 
         if(object_id == MONSTER_RED){
