@@ -1508,7 +1508,7 @@
 	<inttypes.h>
 	<stdint.h>
 
-1528852420 source:c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\src\textrendering.cpp
+1529252169 source:c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\src\textrendering.cpp
 	<string>
 	<glad/glad.h>
 	<GLFW/glfw3.h>
@@ -1902,7 +1902,7 @@
 	<fstream>
 	<sstream>
 
-1529028429 source:c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\src\main.cpp
+1529253413 source:c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\src\main.cpp
 	<cmath>
 	<cstdio>
 	<cstdlib>
@@ -1921,6 +1921,7 @@
 	<glm/vec4.hpp>
 	<glm/gtc/type_ptr.hpp>
 	<tiny_obj_loader.h>
+	"stb_image.h"
 	"utils.h"
 	"matrices.h"
 	"DEFINITIONS.h"
@@ -2014,9 +2015,9 @@
 1528852420 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\glm\matrix.hpp
 	"detail/func_matrix.hpp"
 
-1529028256 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\definitions.h
+1529253436 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\definitions.h
 
-1529023771 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\monster.h
+1529252923 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\monster.h
 	<ctime>
 	<cstdlib>
 
@@ -2039,6 +2040,22 @@
 1529200547 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\intersecao.h
 
 1528943348 c:\users\user\onedrive\documentos\cleiton\fundamentalsofcomputergraphics\include\stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1529252169 c:\users\felipe\documents\github\clas_t\fundamentalsofcomputergraphics\include\stb_image.h
 	"stb_image.h"
 	<stdio.h>
 	<stdarg.h>

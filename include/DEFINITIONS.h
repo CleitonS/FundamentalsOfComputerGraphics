@@ -30,6 +30,6 @@
 #define GRAVIDADE 2.0f
 #define VELO_PULO 4.0f //deve ser maior que gravidade
 #define LIFE_MONSTER 5
-#define VIDA_MURO 5
+#define VIDA_MURO 1
 
 

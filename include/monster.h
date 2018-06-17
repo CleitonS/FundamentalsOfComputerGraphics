@@ -27,7 +27,7 @@ struct Monster{
             //printf("Pos Inic: %f", posIni);
 
             model = Matrix_Identity() *
-                    Matrix_Translate(posIni,0.0f,-6.0f) *
+                    Matrix_Translate(posIni,-0.3f,-6.0f) *
 					Matrix_Scale(0.2f, 0.2f, 0.2f);
 			velocidade = 3.0f;
             Obj = Object;

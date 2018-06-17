@@ -470,7 +470,7 @@ int main(int argc, char* argv[])
         modelos_do_universo[2] = DesenhaFundoBack(model);
         modelos_do_universo[3] = DesenhaFundoLeft(model);
         modelos_do_universo[4] = DesenhaFundoRight(model);
-        modelos_do_universo[4] = DesenhaFundoFront(model);
+        modelos_do_universo[5] = DesenhaFundoFront(model);
 
 
 
@@ -615,22 +615,24 @@ int main(int argc, char* argv[])
             modelos_do_universo[1] = DesenhaMuroFall(model);
 
                 /*Implementação da câmera lookAt... */
-            glm::vec4 camera_position_c  = glm::vec4(1.0,2.0,2.0,1.0f); // Ponto "c", centro da câmera
-            glm::vec4 camera_lookat_l    = glm::vec4(TestA,1.0f,1.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
-            glm::vec4 camera_view_vector = glm::vec4(0.0f,0.0f,-1.0f,0.0f);
-            //glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+            glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
+            glm::vec4 camera_lookat_l    = glm::vec4(0.0f,1.0f,1.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+            //glm::vec4 camera_view_vector = glm::vec4(0.0f,0.0f,-1.0f,0.0f);
+            glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
             glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
             glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
             glm::mat4 projection;
+            float field_of_view = 3.141592 / 3.0f;
+            projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
             glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
             glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
-            /*Desenhando cow*/
+            /*Desenhando cow*//*
             model = Matrix_Translate(2.0f, 0.0,6.5f)
                     * Matrix_Scale(1.0f,1.0f,1.0f);
             glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
             glUniform1i(object_id_uniform, MONSTER_RED);
-            DrawVirtualObject("cow");
+            DrawVirtualObject("cow");*/
 
 
 
