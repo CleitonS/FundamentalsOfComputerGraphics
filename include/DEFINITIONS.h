@@ -32,6 +32,6 @@
 #define LIFE_MONSTER 3
 #define VIDA_MURO 10
 #define VELO_COW 0.5f
-#define VIDA_COW 15
+#define VIDA_COW 30
 #define MONSTERS_TO_COW 10
 

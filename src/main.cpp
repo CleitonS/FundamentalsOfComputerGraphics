@@ -468,9 +468,9 @@ int main(int argc, char* argv[])
                 glUniform1i(object_id_uniform, MONSTER_RED);
                 DrawVirtualObject("cow");
             }
-
-        if(intersecao_bullets(model_cow))
-            vida_cow--;
+        if(monsters_to_cow<=0)
+            if(intersecao_bullets(model_cow))
+                vida_cow--;
         if (vida_cow <= 0)
         {
               model_cow = model_cow * Matrix_Translate(0.0f,10.0f, 20.0f);
@@ -478,6 +478,12 @@ int main(int argc, char* argv[])
                 glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model_cow));
                 glUniform1i(object_id_uniform, MONSTER_RED);
                 DrawVirtualObject("cow");
+                //restaura informaçoes da cow originais
+                model_cow =  Matrix_Translate(0.0f, -0.3f,-3.0f )
+                        * Matrix_Scale(1.0f,1.0f,1.0f)
+                        * Matrix_Rotate_Y(-PHI/2);
+                vida_cow = VIDA_COW;
+                monsters_to_cow = MONSTERS_TO_COW;
         }
 
         if(!gameOver){
@@ -586,7 +592,7 @@ int main(int argc, char* argv[])
             if(g_LeftMouseButtonPressed && aux_bullet)
             {
 
-                createBullet("cube",camera_view_vector, camera_position_c,&cubeObj,k_bullet);
+                createBullet("sphere",camera_view_vector, camera_position_c,&sphereObj,k_bullet);
 
                 if(k_bullet<MAX_BULLETS-1)//vai percorrendo o vetor, e reinicia ao chegar no final
                     k_bullet++;
@@ -600,8 +606,8 @@ int main(int argc, char* argv[])
             UpdateAllMonsters(deltaTempo);
 
             vidaMuro -= Intersecao_Monstros_muro(modelos_do_universo[1]);
-            //if(intersecao_AABB_AABB(modelos_do_universo[1],model_cow))
-            //    vidaMuro = 0;
+            if(intersecao_AABB_AABB(modelos_do_universo[1],model_cow))
+                vidaMuro = 0;
 
             if(vidaMuro <= 0)
                 {
