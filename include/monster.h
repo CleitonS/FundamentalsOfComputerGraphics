@@ -81,7 +81,7 @@ int randomIlumination(){
 }
 
 
-void Destroi_monstro(int i)
+bool Destroi_monstro(int i)
 {
     struct Monster monstro_NULL;
 
@@ -90,7 +90,9 @@ void Destroi_monstro(int i)
     {
         monstro_NULL.create("NULL",0,listMonster[i].Obj,20.0f);
         listMonster[i] = monstro_NULL;
+        return true;
     }
+    return false;
 }
 
 

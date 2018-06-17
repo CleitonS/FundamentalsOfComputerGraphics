@@ -243,6 +243,14 @@ float deltaTempoRespawn= 0.0f;
 
 int vidaMuro = VIDA_MURO;
 
+int monsters_to_cow=MONSTERS_TO_COW;
+
+glm::mat4 model_cow =  Matrix_Translate(0.0f, -0.3f,-3.0f )
+                        * Matrix_Scale(1.0f,1.0f,1.0f)
+                        * Matrix_Rotate_Y(-PHI/2);
+
+int vida_cow = VIDA_COW;
+
 int main(int argc, char* argv[])
 {
     // Inicializamos a biblioteca GLFW, utilizada para criar uma janela do
@@ -472,6 +480,28 @@ int main(int argc, char* argv[])
         modelos_do_universo[4] = DesenhaFundoRight(model);
         modelos_do_universo[5] = DesenhaFundoFront(model);
 
+         /*Desenhando cow*/
+
+         if(monsters_to_cow <= 0 && vida_cow > 0)
+            {
+                model_cow = model_cow * Matrix_Translate(deltaTempo * VELO_COW,0.0f, 0.0f);
+
+                glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model_cow));
+                glUniform1i(object_id_uniform, MONSTER_RED);
+                DrawVirtualObject("cow");
+            }
+
+        if(intersecao_bullets(model_cow))
+            vida_cow--;
+        if (vida_cow <= 0)
+        {
+              model_cow = model_cow * Matrix_Translate(0.0f,10.0f, 20.0f);
+
+                glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model_cow));
+                glUniform1i(object_id_uniform, MONSTER_RED);
+                DrawVirtualObject("cow");
+        }
+
 
 
         if(!gameOver){
@@ -598,6 +628,8 @@ int main(int argc, char* argv[])
             UpdateAllMonsters(deltaTempo);
 
             vidaMuro -= Intersecao_Monstros_muro(modelos_do_universo[1]);
+            //if(intersecao_AABB_AABB(modelos_do_universo[1],model_cow))
+            //    vidaMuro = 0;
 
             if(vidaMuro <= 0)
                 {
@@ -627,12 +659,7 @@ int main(int argc, char* argv[])
             glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
             glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
-            /*Desenhando cow*//*
-            model = Matrix_Translate(2.0f, 0.0,6.5f)
-                    * Matrix_Scale(1.0f,1.0f,1.0f);
-            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-            glUniform1i(object_id_uniform, MONSTER_RED);
-            DrawVirtualObject("cow");*/
+
 
 
 
@@ -1760,7 +1787,10 @@ void intersecao_Bullets_Objetos_Monstros(glm::mat4 modelos_do_universo[MAX_OBJET
 
         for(int i = 0 ; i<MAX_MONSTER;i++)
             if(intersecao_bullets(listMonster[i].model))
-                Destroi_monstro(i);
+            {
+                if(Destroi_monstro(i))
+                    monsters_to_cow--;
+            }
 }
 
 glm::mat4 DesenhaChao(glm::mat4 model){
@@ -1777,8 +1807,8 @@ glm::mat4 DesenhaChao(glm::mat4 model){
 }
 
 glm::mat4  DesenhaMuro(glm::mat4 model){
-        model = Matrix_Translate(0.0f, -0.4,5.0f)
-                * Matrix_Scale(10.0f,1.0f,0.2f);
+        model = Matrix_Translate(0.0f, -0.4,4.5f)
+                * Matrix_Scale(10.0f,1.0f,0.5f);
 
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, WALL);

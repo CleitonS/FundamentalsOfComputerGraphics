@@ -29,7 +29,9 @@
 #define ALTURA_PULO 5.0f
 #define GRAVIDADE 2.0f
 #define VELO_PULO 4.0f //deve ser maior que gravidade
-#define LIFE_MONSTER 5
-#define VIDA_MURO 1
-
+#define LIFE_MONSTER 3
+#define VIDA_MURO 10
+#define VELO_COW 0.5f
+#define VIDA_COW 15
+#define MONSTERS_TO_COW 10
 
