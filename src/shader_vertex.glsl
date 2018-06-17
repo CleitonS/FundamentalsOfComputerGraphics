@@ -64,7 +64,7 @@ void main()
 	vec3 Ia;
 	vec3 lambert_diffuse_term;
 	vec3 ambient_term;
-    Ka = vec3(0.1,0.1,0.1);
+    Ka = vec3(0.2,0.2,0.2);
     I = vec3(1.0,1.0,1.0);    						      // Espectro da fonte de iluminação
     Ia = vec3(1.0,1.0,1.0);   						      // Espectro da luz ambiente
     Kd = vec3 (0.1, 0.1, 1.0);

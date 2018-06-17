@@ -1,20 +1,3 @@
-//     Universidade Federal do Rio Grande do Sul
-//             Instituto de Informática
-//       Departamento de Informática Aplicada
-//
-//    INF01047 Fundamentos de Computação Gráfica
-//               Prof. Eduardo Gastal
-//
-//                   LABORATÓRIO 4
-//
-
-// Arquivos "headers" padrões de C podem ser incluídos em um
-// programa C++, sendo necessário somente adicionar o caractere
-// "c" antes de seu nome, e remover o sufixo ".h". Exemplo:
-//    #include <stdio.h> // Em C
-//  vira
-//    #include <cstdio> // Em C++
-//
 
 #include <cmath>
 #include <cstdio>
@@ -340,14 +323,11 @@ int main(int argc, char* argv[])
 	LoadTextureImage("../../data/castleGameOver.jpg");	        // TextureImage8
 
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
-    // para renderização. Veja slide 217 e 219 do documento no Moodle
-    // "Aula_03_Rendering_Pipeline_Grafico.pdf".
-    //
+    // para renderização.
 
     ObjModel planeObj("../../data/plane.obj");
     ComputeNormals(&planeObj);
     BuildTrianglesAndAddToVirtualScene(&planeObj);
-
 
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
@@ -375,11 +355,6 @@ int main(int argc, char* argv[])
 
     for(int i = 0;i<MAX_BULLETS;i++)
         createBullet("null",vec_null,ponto_null,&sphereObj,i); //inicializa bullets invisiveis e longe
-
-
-
-
-
 
     if ( argc > 1 )
     {
@@ -505,8 +480,6 @@ int main(int argc, char* argv[])
                 DrawVirtualObject("cow");
         }
 
-
-
         if(!gameOver){
             modelos_do_universo[1] = DesenhaMuro(model);
             modelos_do_universo[5] = DesenhaFundoFront(model);
@@ -529,7 +502,6 @@ int main(int argc, char* argv[])
 
             }
              monsterRespawnNew = glfwGetTime();
-
 
             nao_caindo=(no_chao||pulando);//se nao estiver caindo
 
@@ -583,14 +555,10 @@ int main(int argc, char* argv[])
                                                   camera_position_c_copia.z,   1.0f);
 
 
-
-
              camera_view_vector = glm::vec4(x  + camera_view_vector.x*deltaTempo*move_frente + camera_vec_ortogonal.x*deltaTempo*move_lado,
                                            -y ,
                                            z  + camera_view_vector.z*deltaTempo*move_frente + camera_vec_ortogonal.z*deltaTempo*move_lado ,
                                            0.0f); // Vetor "view", sentido para onde a câmera está virada
-
-
 
 
             // Computamos a matriz "View" utilizando os parâmetros da câmera para
@@ -662,13 +630,6 @@ int main(int argc, char* argv[])
             projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
             glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
             glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
-
-
-
-
-
-
-
 
         }
 
