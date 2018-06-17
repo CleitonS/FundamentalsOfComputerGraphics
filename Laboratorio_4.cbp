@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Laboratorio_4" />
+		<Option title="TheCastleDefensor" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -62,9 +62,6 @@
 			<Add option="lib\libglfw3.a -lgdi32 -lopengl32" />
 			<Add directory="lib" />
 		</Linker>
-		<Unit filename="include/Bullets.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Unit filename="include/Bullets.h" />
 		<Unit filename="include/DEFINITIONS.h" />
 		<Unit filename="include/GLFW/glfw3.h" />
